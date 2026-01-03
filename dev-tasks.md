@@ -82,16 +82,16 @@ Phase 2 將包含：
 建立基於 Prompt 的邏輯技能定義。
 
 **Requirements:**
-- [ ] skills/no-script/solve-question.md
+- [x] skills/no-script/solve-question.md
   - 功能：解析單一題目，產出符合 analysis-template 的內容
   - 包含：輸入格式、輸出結構、使用範例
   - 重點：逐項排除邏輯的 Prompt 示範
-  
-- [ ] skills/no-script/explain-why-not.md
+
+- [x] skills/no-script/explain-why-not.md
   - 功能：深度拆解錯誤選項的迷惑點
   - 包含：輸入（題目 + 錯誤選項編號）、輸出（拆解分析）
-  
-- [ ] skills/no-script/generate-variants.md
+
+- [x] skills/no-script/generate-variants.md
   - 功能：產生情境變形題
   - 包含：輸入（原題 + 考點）、輸出（3-5 題變形 + 解析）
 
@@ -105,17 +105,17 @@ Phase 2 將包含：
 建立自動化處理腳本。
 
 **Requirements:**
-- [ ] skills/scripted/mock_exam_grader.py
+- [x] skills/scripted/mock_exam_grader.py
   - 功能：批改模擬卷，產出錯題報告
   - CLI: `--input <yaml> --user <name> --output <path>`
   - 錯誤處理：YAML 格式異常、檔案不存在
-  
-- [ ] skills/scripted/tag_and_file.py
+
+- [x] skills/scripted/tag_and_file.py
   - 功能：自動分類題目到 by-topic/ 目錄
   - CLI: `--source <dir> --dry-run`
   - 邏輯：基於題目內容的關鍵字匹配
-  
-- [ ] skills/scripted/team_weakness_dashboard.py
+
+- [x] skills/scripted/team_weakness_dashboard.py
   - 功能：彙整團隊弱點分析
   - CLI: `--individuals-dir <path> --output <file>`
   - 輸出：Markdown 格式的統計報表
@@ -134,11 +134,11 @@ Phase 2 將包含：
 建立範例內容供參考使用。
 
 **Requirements:**
-- [ ] question-bank/by-topic/delta-lake/example-001.md
+- [x] question-bank/by-topic/delta-lake/example-001.md
   - 實際展示如何使用 question-template
   - 包含完整的解析內容
-  
-- [ ] docs/core-knowledge/delta-lake-cheatsheet.md
+
+- [x] docs/core-knowledge/delta-lake-cheatsheet.md
   - Delta Lake 核心概念速查表
   - 以表格呈現關鍵 API 與配置
 
@@ -149,8 +149,8 @@ Phase 2 將包含：
 ---
 
 ## Acceptance Criteria (Phase 2)
-- [ ] 所有 Prompt 檔案清晰易懂，可直接使用
-- [ ] Python 腳本可獨立執行（含 --help）
-- [ ] 至少有 1 個測試檔案且測試通過
-- [ ] 範例內容品質符合實際使用需求
+- [x] 所有 Prompt 檔案清晰易懂，可直接使用
+- [x] Python 腳本可獨立執行（含 --help）
+- [x] 至少有 1 個測試檔案且測試通過
+- [x] 範例內容品質符合實際使用需求
 - [ ] 所有變更已提交至 Git
