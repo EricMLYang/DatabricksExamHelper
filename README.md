@@ -1,12 +1,3 @@
-# Databricks Cert Agent Repo
-
-> 將 Databricks 認證考試轉化為「可版本化」、「可複習」、「可持續迭代」的知識資產
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./tooling/contribution-guide.md)
-
----
-
 ## 📖 專案目的
 
 本專案建立一個基於 **GitHub Copilot** 與 **Agent Skills** 的團隊協作框架，目標是：
@@ -32,14 +23,7 @@
 - （選填）GitHub Copilot 訂閱（用於 Agent Skills）
 - （選填）Python 3.8+ （用於自動化腳本）
 
-### 1. Clone 專案
-
-```bash
-git clone https://github.com/your-org/databricks-cert-agent.git
-cd databricks-cert-agent
-```
-
-### 2. 建立第一個題目
+### 1. 建立第一個題目
 
 複製模板並填寫題目：
 
@@ -55,7 +39,7 @@ cp question-bank/_template/analysis-template.md \
 
 使用編輯器開啟檔案，依照模板中的註解說明填寫內容。
 
-### 3. 檢視模板結構
+### 2. 檢視模板結構
 
 ```bash
 # 檢視題目模板
@@ -65,7 +49,7 @@ cat question-bank/_template/question-template.md
 cat question-bank/_template/analysis-template.md
 ```
 
-### 4. 提交變更
+### 3. 提交變更
 
 ```bash
 git add question-bank/by-topic/Q-PRACTICE-001-*.md
@@ -73,7 +57,7 @@ git commit -m "Add: Q-PRACTICE-001 Delta Lake VACUUM 題目與解析"
 git push origin main
 ```
 
-### 5. 檢視標籤規範
+### 4. 檢視標籤規範
 
 ```bash
 # 查看標籤命名規則
