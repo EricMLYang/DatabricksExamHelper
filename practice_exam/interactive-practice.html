@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Databricks 弱點強化練習 💪</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .stat-box {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .question-area {
+            padding: 40px 30px;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-right: 15px;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .question-topic {
+            background: #e7f5ff;
+            color: #1971c2;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            margin: 20px 0;
+            overflow-x: auto;
+            border-left: 4px solid #61dafb;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 3px solid #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+            transition: width 0.3s ease;
+        }
+
+        .option:hover {
+            transform: translateX(5px);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .option:hover::before {
+            width: 100%;
+        }
+
+        .option-label {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 8px;
+            margin-right: 15px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #e7f5ff;
+        }
+
+        .option.correct {
+            border-color: #51cf66;
+            background: #d3f9d8;
+            animation: correctPulse 0.6s ease;
+        }
+
+        .option.wrong {
+            border-color: #ff6b6b;
+            background: #ffe3e3;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .result-badge {
+            display: none;
+            float: right;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .result-badge.show {
+            display: inline-block;
+        }
+
+        .result-badge.correct {
+            background: #51cf66;
+            color: white;
+        }
+
+        .result-badge.wrong {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .explanation {
+            display: none;
+            background: #fff9db;
+            border-left: 5px solid #ffd43b;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+            }
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .explanation h3 {
+            color: #e67700;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .explanation-content {
+            line-height: 1.8;
+            color: #495057;
+        }
+
+        .key-concept {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #4dabf7;
+        }
+
+        .memory-tip {
+            background: linear-gradient(135deg, #ffd8a8 0%, #ffc078 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .memory-tip::before {
+            content: "💡 ";
+            font-size: 1.5em;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: space-between;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #51cf66, #37b24d);
+            color: white;
+        }
+
+        .btn-prev {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .completion {
+            display: none;
+            text-align: center;
+            padding: 60px 30px;
+        }
+
+        .completion.show {
+            display: block;
+            animation: slideIn 0.6s ease;
+        }
+
+        .completion-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .completion h2 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .final-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .final-stat {
+            text-align: center;
+        }
+
+        .final-stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .final-stat-label {
+            color: #6c757d;
+            margin-top: 10px;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin-top: 30px;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .topic-delta { background: #ffe3e3; color: #c92a2a; }
+        .topic-streaming { background: #d0ebff; color: #1864ab; }
+        .topic-monitoring { background: #d3f9d8; color: #2b8a3e; }
+        .topic-security { background: #ffec99; color: #e67700; }
+        .topic-mlflow { background: #fcc2d7; color: #a61e4d; }
+        .topic-jobs { background: #e7f5ff; color: #1971c2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Databricks 弱點強化練習</h1>
+            <p>專注於你不熟悉的題目，加強記憶與理解</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <span class="stat-number" id="currentQuestion">1</span>
+                <div class="stat-label">目前題號</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number" id="totalQuestions">8</span>
+                <div class="stat-label">總題數</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number" id="correctCount">0</span>
+                <div class="stat-label">答對數</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number" id="accuracy">0%</span>
+                <div class="stat-label">正確率</div>
+            </div>
+        </div>
+
+        <div class="question-area" id="questionArea">
+            <!-- Questions will be loaded here -->
+        </div>
+
+        <div class="completion" id="completion">
+            <div class="completion-icon">🎉</div>
+            <h2>恭喜完成練習！</h2>
+            <div class="final-stats">
+                <div class="final-stat">
+                    <div class="final-stat-number" id="finalCorrect">0</div>
+                    <div class="final-stat-label">答對題數</div>
+                </div>
+                <div class="final-stat">
+                    <div class="final-stat-number" id="finalAccuracy">0%</div>
+                    <div class="final-stat-label">正確率</div>
+                </div>
+            </div>
+            <p style="font-size: 1.2em; color: #495057; margin: 20px 0;">
+                建議：針對答錯的題目，重新閱讀官方文件與解析，並做筆記強化記憶！
+            </p>
+            <button class="btn btn-restart" onclick="restartQuiz()">重新練習</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: "Q-092",
+                number: 1,
+                topic: "Table Cloning & VACUUM",
+                topics: ["Delta Lake", "VACUUM", "Table Cloning"],
+                topicClasses: ["topic-delta"],
+                question: "為了防止意外提交到生產資料，資深資料工程師制定了一項政策：所有開發工作都將參考 Delta Lake 表的克隆。測試了 DEEP 和 SHALLOW CLONE 後，開發表使用 SHALLOW CLONE 建立。<br><br>在初始表建立幾週後，幾個實作為 Type 1 SCD 的克隆表停止工作。來源表的事務日誌顯示前一天執行了 VACUUM。<br><br>哪個陳述描述了克隆表不再工作的原因？",
+                options: [
+                    { label: "A", text: "因為 Type 1 變更會覆寫現有記錄，Delta Lake 無法保證克隆表的資料一致性。" },
+                    { label: "B", text: "執行 VACUUM 會自動使表的任何淺克隆失效；當克隆表需要重複查詢時，應始終使用 DEEP CLONE。" },
+                    { label: "C", text: "使用 SHALLOW CLONE 建立的表會在預設保留閾值 7 天後自動刪除。" },
+                    { label: "D", text: "CLONE 操作建立的 metadata 引用的資料檔案被 VACUUM 指令清除了。", correct: true },
+                    { label: "E", text: "VACUUM 壓縮的資料檔案未被克隆的 metadata 追蹤；在克隆表上執行 REFRESH 將拉取最近的變更。" }
+                ],
+                correctAnswer: "D",
+                explanation: `
+                    <h3>🎯 核心概念</h3>
+                    <div class="key-concept">
+                        <strong>SHALLOW CLONE 的運作機制：</strong><br>
+                        • SHALLOW CLONE 只複製 metadata（交易日誌），不複製資料檔案<br>
+                        • 克隆表引用來源表的資料檔案（pointer reference）<br>
+                        • 當來源表的資料檔案被刪除時，克隆表會失效
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>VACUUM 的影響：</strong><br>
+                        • VACUUM 刪除不再被來源表引用的舊資料檔案<br>
+                        • VACUUM <strong>不知道 SHALLOW CLONE 的存在</strong><br>
+                        • 因此會誤刪 shallow clone 需要的檔案
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶口訣：</strong><br>
+                        「SHALLOW = 只有影子（metadata），VACUUM 清掃時不會看影子的需求」<br><br>
+                        <strong>對比：</strong><br>
+                        • SHALLOW CLONE = 租房（參考別人的檔案）<br>
+                        • DEEP CLONE = 買房（自己的檔案副本）<br>
+                        房東（來源表）清理垃圾時，不會考慮租客（shallow clone）是否還在用！
+                    </div>
+                `,
+                link: "Q-092"
+            },
+            {
+                id: "Q-093",
+                number: 2,
+                topic: "Stream-Static Join",
+                topics: ["Streaming", "Spark Joins"],
+                topicClasses: ["topic-streaming"],
+                question: "你正在執行一個 join 操作，將靜態 <code>userLookup</code> 表的值與串流 DataFrame <code>streamingDF</code> 結合。<br><br>哪個程式碼區塊嘗試執行<strong>無效的</strong> stream-static join？",
+                options: [
+                    { label: "A", text: "<code>userLookup.join(streamingDF, ['userid'], how='inner')</code>" },
+                    { label: "B", text: "<code>streamingDF.join(userLookup, ['user_id'], how='outer')</code>", correct: true },
+                    { label: "C", text: "<code>streamingDF.join(userLookup, ['user_id'], how='left')</code>" },
+                    { label: "D", text: "<code>streamingDF.join(streamingDF, ['userid'], how='inner')</code>" },
+                    { label: "E", text: "<code>userLookup.join(streamingDF, ['user_id'], how='right')</code>" }
+                ],
+                correctAnswer: "B",
+                explanation: `
+                    <h3>🎯 Structured Streaming Join 支援矩陣</h3>
+                    <div class="key-concept">
+                        <strong>Stream-Static Join 支援的類型：</strong><br>
+                        ✅ Stream LEFT JOIN Static（Stream 保留所有記錄）<br>
+                        ✅ Stream INNER JOIN Static<br>
+                        ✅ Static RIGHT JOIN Stream（等同於上面的 Stream LEFT JOIN）<br>
+                        ✅ Static INNER JOIN Stream<br>
+                        <br>
+                        ❌ Stream RIGHT JOIN Static（不支援）<br>
+                        ❌ Stream FULL OUTER JOIN Static（不支援）<br>
+                        ❌ Static LEFT JOIN Stream（不支援）<br>
+                        ❌ Static FULL OUTER JOIN Stream（不支援）
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>為何不支援 OUTER JOIN？</strong><br>
+                        • Streaming 是無界的（資料持續流入）<br>
+                        • OUTER JOIN 需要「知道所有資料」才能決定未匹配記錄<br>
+                        • 無法確定靜態資料「永遠不會」與未來串流資料匹配<br>
+                        • State 管理複雜度與記憶體成本無法承受
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶法：</strong><br>
+                        「串流只能保留<strong>自己</strong>的記錄（LEFT），不能保留<strong>別人</strong>的記錄（RIGHT/OUTER）」<br><br>
+                        想像串流是一條河流，只能帶走自己的東西，不能回頭撈靜態湖泊的東西！
+                    </div>
+                `,
+                link: "Q-093"
+            },
+            {
+                id: "Q-094",
+                number: 3,
+                topic: "Spill 診斷",
+                topics: ["Monitoring", "Performance"],
+                topicClasses: ["topic-monitoring"],
+                question: "Spill 是執行各種寬轉換（wide transformations）的結果。然而，診斷 spill 需要主動查找關鍵指標。<br><br>在 Spark UI 中的哪裡可以找到 partition 溢出到磁碟的兩個主要指標？",
+                options: [
+                    { label: "A", text: "Query's detail screen 和 Job's detail screen" },
+                    { label: "B", text: "Stage's detail screen 和 Executor's log files", correct: true },
+                    { label: "C", text: "Driver's 和 Executor's log files" },
+                    { label: "D", text: "Executor's detail screen 和 Executor's log files" },
+                    { label: "E", text: "Stage's detail screen 和 Query's detail screen" }
+                ],
+                correctAnswer: "B",
+                explanation: `
+                    <h3>🎯 診斷 Spill 的兩個關鍵位置</h3>
+                    <div class="key-concept">
+                        <strong>位置 1: Stage Detail Screen</strong><br>
+                        路徑：Spark UI → Jobs → [Job ID] → [Stage ID]<br><br>
+                        關鍵指標：<br>
+                        • Shuffle Spill (Memory) - 記憶體溢出量<br>
+                        • Shuffle Spill (Disk) - 寫入磁碟量<br>
+                        • 可看到 Min/Median/Max 值，識別哪些 partition 有問題
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>位置 2: Executor Log Files</strong><br>
+                        路徑：Spark UI → Executors → [Executor ID] → View Logs<br><br>
+                        典型訊息：<br>
+                        • <code>INFO ExternalSorter: Thread 123 spilling in-memory map of 128.0 MB to disk</code><br>
+                        • <code>WARN ShuffleExternalSorter: Spilling data because...</code><br>
+                        • 提供詳細的 spill 原因與資料量
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶口訣：</strong><br>
+                        「Stage 看<strong>數字</strong>（量化指標），Log 看<strong>原因</strong>（詳細訊息）」<br><br>
+                        Stage = 體檢報告的數值（血壓、血糖）<br>
+                        Log = 醫生的診斷說明（為什麼高、怎麼治療）
+                    </div>
+                `,
+                link: "Q-094"
+            },
+            {
+                id: "Q-100",
+                number: 4,
+                topic: "Secrets 權限管理",
+                topics: ["Security", "Access Control", "Secrets"],
+                topicClasses: ["topic-security"],
+                question: "資料工程團隊被要求設定連接到外部資料庫（該資料庫沒有 Databricks 原生連接器）。外部資料庫已透過群組成員身份配置資料安全性。這些群組直接對應到 Databricks 中已建立的使用者群組。<br><br>已為外部資料庫中的每個群組建立新的登入憑證。將使用 Databricks Utilities Secrets 模組使這些憑證可供 Databricks 使用者使用。<br><br>假設所有憑證在外部資料庫上配置正確，且 Databricks 上的群組成員身份配置正確，哪個陳述描述了如何授予團隊<strong>最小必要存取權限</strong>來使用這些憑證？",
+                options: [
+                    { label: "A", text: "應在對應給定團隊將使用的憑證的 secret key 上設定「Manage」權限。" },
+                    { label: "B", text: "應在對應給定團隊將使用的憑證的 secret key 上設定「Read」權限。" },
+                    { label: "C", text: "應在僅包含給定團隊將使用的憑證的 secret scope 上設定「Read」權限。", correct: true },
+                    { label: "D", text: "應在僅包含給定團隊將使用的憑證的 secret scope 上設定「Manage」權限。" },
+                    { label: "E", text: "只要所有使用者在已新增 secrets 的工作區中配置為管理員，就不需要額外配置。" }
+                ],
+                correctAnswer: "C",
+                explanation: `
+                    <h3>🎯 Databricks Secrets 權限架構</h3>
+                    <div class="key-concept">
+                        <strong>關鍵事實：</strong><br>
+                        ✅ 可以對 <strong>Secret Scope</strong> 設定權限<br>
+                        ❌ <strong>不能</strong>對單一 <strong>Secret Key</strong> 設定權限<br><br>
+                        權限類型：<br>
+                        • READ - 讀取 scope 內的所有 secrets<br>
+                        • WRITE - 新增/修改 scope 內的 secrets<br>
+                        • MANAGE - 管理 scope（包含 READ + WRITE + 權限管理）
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>最小權限原則：</strong><br>
+                        1. 為每個團隊建立<strong>獨立的 Secret Scope</strong><br>
+                        2. 該 scope 只包含該團隊需要的憑證<br>
+                        3. 授予團隊 <strong>READ</strong> 權限（使用 secrets，不需修改）<br>
+                        4. 團隊無法存取其他團隊的 secrets
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶法：</strong><br>
+                        「Secret Scope = 保險箱，Key = 裡面的文件」<br>
+                        你只能控制誰能打開<strong>整個保險箱</strong>（Scope），<br>
+                        不能控制誰能看保險箱裡的<strong>特定文件</strong>（Key）！<br><br>
+                        架構設計：一個團隊 = 一個 Scope（隔離）+ READ 權限（最小）
+                    </div>
+                `,
+                link: "Q-100"
+            },
+            {
+                id: "Q-102",
+                number: 5,
+                topic: "Notebook 檔案格式",
+                topics: ["Notebooks", "Development"],
+                topicClasses: ["topic-security"],
+                question: "當在文字編輯器中查看 Databricks Python notebook 時，第一行是什麼？",
+                options: [
+                    { label: "A", text: "<code>%python</code>" },
+                    { label: "B", text: "<code>// Databricks notebook source</code>" },
+                    { label: "C", text: "<code># Databricks notebook source</code>", correct: true },
+                    { label: "D", text: "<code>- Databricks notebook source</code>" },
+                    { label: "E", text: "<code># MAGIC %python</code>" }
+                ],
+                correctAnswer: "C",
+                explanation: `
+                    <h3>🎯 Databricks Notebook 檔案格式</h3>
+                    <div class="key-concept">
+                        <strong>不同語言的第一行：</strong><br>
+                        • Python notebook: <code># Databricks notebook source</code><br>
+                        • Scala notebook: <code>// Databricks notebook source</code><br>
+                        • SQL notebook: <code>-- Databricks notebook source</code><br>
+                        • R notebook: <code># Databricks notebook source</code><br><br>
+                        使用對應語言的註解符號，確保可作為純程式碼執行
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>這個標記的作用：</strong><br>
+                        🏷️ 識別 Notebook 類型 - 告訴 Databricks 這是 notebook 檔案<br>
+                        🔧 語法符合 Python - 不會影響程式碼執行<br>
+                        🌳 版本控制友善 - Git 可正確處理為原始碼
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶法：</strong><br>
+                        「<code>#</code> = Python 註解，<code>%</code> = Cell Magic」<br><br>
+                        • 檔案第一行 = 告訴系統「我是誰」→ 用註解 <code>#</code><br>
+                        • Cell 內切換語言 = 告訴 Spark「這個 cell 用什麼」→ 用 magic <code>%</code><br><br>
+                        身份證（檔案）vs 臨時證（cell）的概念！
+                    </div>
+                `,
+                link: "Q-102"
+            },
+            {
+                id: "Q-104",
+                number: 6,
+                topic: "Job ID vs Run ID",
+                topics: ["Jobs", "Automation", "CLI"],
+                topicClasses: ["topic-jobs"],
+                question: "使用 Databricks CLI 透過傳遞 <code>job_id</code> 參數來觸發現有作業的執行。作業執行請求成功提交的回應包含一個 <code>run_id</code> 欄位。<br><br>哪個陳述描述了該欄位旁邊的數字代表什麼？",
+                options: [
+                    { label: "A", text: "job_id 和作業執行次數被串接並返回。" },
+                    { label: "B", text: "工作區中已執行的作業總數。" },
+                    { label: "C", text: "作業定義在此工作區中被執行的次數。" },
+                    { label: "D", text: "job_id 在此欄位中返回。" },
+                    { label: "E", text: "新觸發執行的全域唯一 ID。", correct: true }
+                ],
+                correctAnswer: "E",
+                explanation: `
+                    <h3>🎯 Job ID vs Run ID 的核心差異</h3>
+                    <div class="key-concept">
+                        <table style="width:100%; border-collapse: collapse;">
+                            <tr style="background:#e7f5ff;">
+                                <th style="padding:10px; border:1px solid #dee2e6;">概念</th>
+                                <th style="padding:10px; border:1px solid #dee2e6;">job_id</th>
+                                <th style="padding:10px; border:1px solid #dee2e6;">run_id</th>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border:1px solid #dee2e6;"><strong>定義</strong></td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">Job <strong>定義</strong>的 ID</td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">Job <strong>執行實例</strong>的 ID</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border:1px solid #dee2e6;"><strong>產生時機</strong></td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">建立 Job 時</td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">每次執行時</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border:1px solid #dee2e6;"><strong>唯一性</strong></td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">永久不變</td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">全域唯一，每次不同</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px; border:1px solid #dee2e6;"><strong>用途</strong></td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">觸發 Job</td>
+                                <td style="padding:10px; border:1px solid #dee2e6;">追蹤特定執行</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>run_id 的特性：</strong><br>
+                        ✅ <strong>全域唯一</strong> - 整個 Workspace 中唯一<br>
+                        ✅ 用於查詢、監控、取消特定執行<br>
+                        ✅ 每次執行都不同（即使是同一個 Job）
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶法：</strong><br>
+                        「Job = 食譜（Recipe），Run = 每次煮的菜（Dish）」<br><br>
+                        • job_id = 食譜編號（永久不變）<br>
+                        • run_id = 每次煮的菜的編號（每次都新的）<br><br>
+                        同一個食譜可以煮很多次，每次煮的菜都有獨特的識別！
+                    </div>
+                `,
+                link: "Q-104"
+            },
+            {
+                id: "Q-105",
+                number: 7,
+                topic: "MLflow Model as UDF",
+                topics: ["MLflow", "Machine Learning", "Spark UDF"],
+                topicClasses: ["topic-mlflow"],
+                question: "資料科學團隊使用 MLflow 建立並記錄了一個生產模型。該模型接受欄位名稱列表並返回 DOUBLE 類型的新欄位。<br><br>以下程式碼正確匯入生產模型，將包含 <code>customer_id</code> 鍵欄位的 customers 表載入 DataFrame，並定義模型所需的特徵欄位。<br><br><div class='code-block'>model = mlflow.pyfunc.spark_udf(spark, model_uri=\"models:/churn/prod\")<br>df = spark.table(\"customers\")<br>columns = [\"account_age\", \"time_since_last_seen\", \"app_rating\"]</div><br>哪個程式碼區塊將輸出 schema 為 \"customer_id LONG, predictions DOUBLE\" 的 DataFrame？",
+                options: [
+                    { label: "A", text: "<code>df.map(lambda x:model(x[columns])).select(\"customer_id, predictions\")</code>" },
+                    { label: "B", text: "<code>df.select(\"customer_id\", model(*columns).alias(\"predictions\"))</code>", correct: true },
+                    { label: "C", text: "<code>model.predict(df, columns)</code>" },
+                    { label: "D", text: "<code>df.select(\"customer_id\", pandas_udf(model, columns).alias(\"predictions\"))</code>" },
+                    { label: "E", text: "<code>df.apply(model, columns).select(\"customer_id, predictions\")</code>" }
+                ],
+                correctAnswer: "B",
+                explanation: `
+                    <h3>🎯 MLflow Spark UDF 的使用方式</h3>
+                    <div class="key-concept">
+                        <strong>關鍵理解：</strong><br>
+                        • <code>mlflow.pyfunc.spark_udf()</code> 返回的 <code>model</code> <strong>就是一個 Spark UDF</strong><br>
+                        • 可以直接在 <code>select()</code> 中呼叫<br>
+                        • <strong>不需要</strong>額外的 <code>pandas_udf()</code> 包裝
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>展開語法（*columns）的作用：</strong><br>
+                        <code>columns = ["account_age", "time_since_last_seen", "app_rating"]</code><br><br>
+                        <code>model(*columns)</code> 展開為：<br>
+                        <code>model("account_age", "time_since_last_seen", "app_rating")</code><br><br>
+                        UDF 接收三個獨立的欄位作為輸入，對每一行執行預測
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶法：</strong><br>
+                        「<code>*columns</code> = 打開包裹（unpack），把列表變成參數」<br><br>
+                        想像：<br>
+                        • <code>columns</code> = 一個箱子裝了三個蘋果<br>
+                        • <code>*columns</code> = 打開箱子，把三個蘋果分別拿出來<br><br>
+                        MLflow UDF 需要「分開的蘋果」，不是「裝在箱子裡的蘋果」！
+                    </div>
+                `,
+                link: "Q-105"
+            },
+            {
+                id: "Q-106",
+                number: 8,
+                topic: "增量處理成本優化",
+                topics: ["Delta Lake", "Streaming", "Cost Optimization"],
+                topicClasses: ["topic-delta", "topic-streaming"],
+                question: "一個夜間批次作業配置為從雲端物件儲存容器攝取所有資料檔案，記錄儲存在巢狀目錄結構 <code>YYYY/MM/DD</code> 中。每個日期的資料代表來源系統在該日期處理的所有記錄，<strong>注意某些記錄可能因等待審核者批准而延遲</strong>。<br><br>每個條目代表使用者對產品的評論，schema 為：<div class='code-block'>user_id STRING, review_id BIGINT, product_id BIGINT, review_timestamp TIMESTAMP, review_text STRING</div><br>攝取作業配置為將前一天的所有資料 append 到目標表 <code>reviews_raw</code>。管道中的下一步是批次寫入，將插入到 <code>reviews_raw</code> 的所有新記錄傳播到資料完全去重、驗證和豐富的表。<br><br>哪個方案<strong>最小化運算成本</strong>來傳播這批資料？",
+                options: [
+                    { label: "A", text: "對 reviews_raw 表執行批次讀取，並使用自然複合鍵 user_id, review_id, product_id, review_timestamp 執行 insert-only merge。" },
+                    { label: "B", text: "配置對 reviews_raw 表的 Structured Streaming 讀取，使用 trigger once 執行模式將新記錄作為批次作業處理。", correct: true },
+                    { label: "C", text: "使用 Delta Lake 版本歷史取得 reviews_raw 最新版本與前一個版本之間的差異，然後將這些記錄寫入下一個表。" },
+                    { label: "D", text: "根據 review_timestamp 篩選 reviews_raw 表中的所有記錄；批次 append 過去 48 小時產生的記錄。" },
+                    { label: "E", text: "重新處理 reviews_raw 中的所有記錄並覆寫管道中的下一個表。" }
+                ],
+                correctAnswer: "B",
+                explanation: `
+                    <h3>🎯 Structured Streaming + Trigger.Once 的優勢</h3>
+                    <div class="key-concept">
+                        <strong>為什麼選項 B 是最佳方案？</strong><br><br>
+                        ✅ <strong>自動增量追蹤</strong> - Checkpoint 自動記錄已處理的資料<br>
+                        ✅ <strong>最小資料掃描</strong> - 只讀取自上次執行後新增的檔案<br>
+                        ✅ <strong>成本最低</strong> - 不需全表掃描、不需版本比對、不需複雜 MERGE<br>
+                        ✅ <strong>可重複執行</strong> - Exactly-once 語義，失敗可重試<br>
+                        ✅ <strong>批次執行</strong> - Trigger.Once 讓串流以批次模式執行
+                    </div>
+                    
+                    <div class="key-concept">
+                        <strong>增量處理機制：</strong><br>
+                        Day 1: reviews_raw 有 1000 筆 → 處理 1000 筆<br>
+                        Day 2: 新增 500 筆 → <strong>只讀取 500 筆</strong> ← 成本最低！<br>
+                        Day 3: 新增 300 筆 → <strong>只讀取 300 筆</strong><br><br>
+                        Checkpoint 自動追蹤進度，無需手動管理
+                    </div>
+                    
+                    <div class="memory-tip">
+                        <strong>記憶法：</strong><br>
+                        「Trigger.Once = 聰明的書籤」<br><br>
+                        • 自動記住上次讀到哪裡（checkpoint）<br>
+                        • 每次只讀新增的部分（增量）<br>
+                        • 不會重複讀舊資料（成本最低）<br><br>
+                        就像看書用書籤，不用每次從頭翻！
+                    </div>
+                `,
+                link: "Q-106"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let correctCount = 0;
+
+        function loadQuestion(index) {
+            const q = questions[index];
+            const questionArea = document.getElementById('questionArea');
+            
+            let topicBadges = '';
+            q.topics.forEach((topic, i) => {
+                topicBadges += `<span class="topic-badge ${q.topicClasses[i] || 'topic-delta'}">${topic}</span>`;
+            });
+
+            questionArea.innerHTML = `
+                <div class="question-header">
+                    <div class="question-number">題目 ${q.number}</div>
+                    <div class="question-topic">${q.topic}</div>
+                </div>
+                <div style="margin-bottom: 15px;">${topicBadges}</div>
+                <div class="question-text">${q.question}</div>
+                <div class="options" id="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-index="${i}" onclick="selectOption(${i})">
+                            <span class="option-label">${opt.label}</span>
+                            ${opt.text}
+                            <span class="result-badge" id="badge-${i}"></span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="explanation" id="explanation">
+                    ${q.explanation}
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-prev" onclick="prevQuestion()" ${index === 0 ? 'disabled' : ''}>
+                        ← 上一題
+                    </button>
+                    <button class="btn btn-submit" id="submitBtn" onclick="submitAnswer()">
+                        確認答案
+                    </button>
+                    <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()" style="display:none;">
+                        下一題 →
+                    </button>
+                </div>
+            `;
+
+            // Restore previous answer if any
+            if (answers[index] !== undefined) {
+                const options = document.querySelectorAll('.option');
+                options[answers[index]].classList.add('selected');
+                showResult(answers[index], true);
+            }
+
+            updateStats();
+        }
+
+        function selectOption(index) {
+            if (answers[currentQuestionIndex] !== undefined) return; // Already answered
+
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[index].classList.add('selected');
+        }
+
+        function submitAnswer() {
+            const selectedOption = document.querySelector('.option.selected');
+            if (!selectedOption) {
+                alert('請選擇一個答案！');
+                return;
+            }
+
+            const selectedIndex = parseInt(selectedOption.dataset.index);
+            answers[currentQuestionIndex] = selectedIndex;
+
+            showResult(selectedIndex, false);
+        }
+
+        function showResult(selectedIndex, skipAnimation) {
+            const q = questions[currentQuestionIndex];
+            const options = document.querySelectorAll('.option');
+            const isCorrect = q.options[selectedIndex].correct;
+
+            options.forEach((opt, i) => {
+                opt.style.pointerEvents = 'none';
+                const badge = document.getElementById(`badge-${i}`);
+                
+                if (q.options[i].correct) {
+                    if (!skipAnimation) opt.classList.add('correct');
+                    badge.textContent = '✓ 正確';
+                    badge.classList.add('show', 'correct');
+                } else if (i === selectedIndex) {
+                    if (!skipAnimation) opt.classList.add('wrong');
+                    badge.textContent = '✗ 錯誤';
+                    badge.classList.add('show', 'wrong');
+                }
+            });
+
+            if (isCorrect && answers.filter((a, i) => i === currentQuestionIndex).length === 1) {
+                correctCount++;
+            }
+
+            document.getElementById('explanation').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+
+            updateStats();
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            } else {
+                showCompletion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('correctCount').textContent = correctCount;
+            
+            const answeredCount = answers.filter(a => a !== undefined).length;
+            const accuracy = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showCompletion() {
+            document.getElementById('questionArea').style.display = 'none';
+            const completion = document.getElementById('completion');
+            completion.classList.add('show');
+
+            const accuracy = Math.round((correctCount / questions.length) * 100);
+            document.getElementById('finalCorrect').textContent = `${correctCount}/${questions.length}`;
+            document.getElementById('finalAccuracy').textContent = accuracy + '%';
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            answers = [];
+            correctCount = 0;
+            
+            document.getElementById('questionArea').style.display = 'block';
+            document.getElementById('completion').classList.remove('show');
+            
+            loadQuestion(0);
+            updateStats();
+        }
+
+        // Initialize
+        loadQuestion(0);
+    </script>
+</body>
+</html>
