@@ -1,4 +1,4 @@
-```markdown
+
 # CDF / CDC 說明文件（以目的與作用說清楚）
 
 ## 1) 目的與作用差異（先用一句話分開）
@@ -16,7 +16,7 @@ CDF 會讓 Delta 表能提供「這段期間有哪些列被改了」的資料輸
 ```sql
 ALTER TABLE my_table
 SET TBLPROPERTIES (delta.enableChangeDataFeed = true);
-```
+
 
 （也可在建立表時用 TBLPROPERTIES 開啟）
 
