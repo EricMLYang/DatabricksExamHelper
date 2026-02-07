@@ -109,3 +109,70 @@ B          | 2024-01-01 | 75    | 75        (B的第1次)
 ```
 
 考試提示: 題目若無特別說明,通常考 `rowsBetween`
+
+---
+
+# Window Spec 讀法與常考補充
+
+## 讀懂 window_spec 的兩步
+```
+Window.partitionBy("department").orderBy(col("salary").desc())
+```
+1. `partitionBy("department")`：先把資料分成多個部門分區，各自計算
+2. `orderBy(salary desc)`：在部門內依薪資由高到低排序，後續排名/比較都依此順序
+
+---
+
+## 常考 1：Running / Rolling 聚合
+
+### A. Running（累計/累積平均）
+```
+w_running = window_spec.rowsBetween(Window.unboundedPreceding, Window.currentRow)
+
+df2 = (df
+  .withColumn("running_sum_salary", F.sum("salary").over(w_running))
+  .withColumn("running_avg_salary", F.avg("salary").over(w_running))
+)
+```
+解釋：部門內按薪資排序後，從第一筆累計到目前這筆
+
+### B. Rolling（最近 N 筆移動計算）
+```
+w_rolling_3 = window_spec.rowsBetween(-2, 0)  # 含自己在內的最近3筆
+
+df3 = (df
+  .withColumn("rolling3_avg_salary", F.avg("salary").over(w_rolling_3))
+  .withColumn("rolling3_max_salary", F.max("salary").over(w_rolling_3))
+)
+```
+解釋：部門內排序後，取「目前這筆 + 前面兩筆」做移動計算  
+這裡的「前面」是排序後在你前面的列（薪資更高或同高）
+
+---
+
+## 常考 2：lag / lead 前後期比較
+
+### A. 跟上一個人比（薪資差）
+```
+df4 = (df
+  .withColumn("prev_salary", F.lag("salary", 1).over(window_spec))
+  .withColumn("diff_vs_prev", F.col("salary") - F.col("prev_salary"))
+)
+```
+解釋：部門內排序後，拿上一列薪資做差（第一列為 null）
+
+### B. 跟下一個人比（薪資差/比率）
+```
+df5 = (df
+  .withColumn("next_salary", F.lead("salary", 1).over(window_spec))
+  .withColumn("diff_vs_next", F.col("salary") - F.col("next_salary"))
+  .withColumn("ratio_vs_next", F.col("salary") / F.col("next_salary"))
+)
+```
+解釋：部門內排序後，拿下一列薪資比較（最後一列為 null）
+
+---
+
+## 小提醒（考點常出）
+- `rowsBetween(-2, 0)` 是最近 3 列（看列位置，不是時間/值範圍）
+- `rangeBetween(...)` 才是值的範圍（如時間戳）
