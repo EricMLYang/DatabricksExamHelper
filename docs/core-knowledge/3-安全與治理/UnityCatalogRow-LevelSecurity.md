@@ -114,7 +114,7 @@ CREATE GROUP IF NOT EXISTS finance_team;
 CREATE GROUP IF NOT EXISTS regional_managers;
 
 -- 添加用戶到群組
-ALTER GROUP finance_team ADD USER 'eric.yang@auo.com';
+ALTER GROUP finance_team ADD USER 'user@example.com';
 ```
 
 ### Step 2: 建立並測試 Row Filter 函數

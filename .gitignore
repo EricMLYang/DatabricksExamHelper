@@ -37,6 +37,12 @@ env/
 
 # User data (練習記錄、錯題本等個人資料)
 .claude-exam-helper/
+.claude/
+
+# Env / local secrets
+.env
+.env.*
+!.env.example
 
 # Test outputs
 test-output/
