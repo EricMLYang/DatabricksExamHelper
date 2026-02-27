@@ -234,7 +234,8 @@ def show_statistics():
             print(f"2. **注意陷阱:** 特別留意 {top_trap} 類型的題目")
 
         print(f"3. **複習頻率:** 建議每 2-3 天複習一次錯題")
-        print(f"\n使用 `/review-mistakes --retry` 開始錯題複習")
+        print("\n使用以下指令開始錯題複習：")
+        print("python .github/skills/practice-exam/scripts/interactive_exam.py --review-mode")
     else:
         print("🎉 太棒了！目前沒有需要複習的錯題")
         print("   繼續保持，可以嘗試更高難度的題目")

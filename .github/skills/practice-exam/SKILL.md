@@ -1,12 +1,12 @@
 ---
 name: practice-exam
-description: 互動式練習考試模式，逐題顯示題目、收集答案、即時反饋，答錯時自動深度解析。支援按主題、難度篩選題目，並記錄答題歷史用於後續分析。適合日常練習與考前訓練。
+description: 互動式練習考試模式，逐題顯示題目、收集答案、即時反饋，答錯時提示回看完整解析並寫入錯題本。支援按主題、難度篩選題目，並記錄答題歷史用於後續分析。適合日常練習與考前訓練。
 allowed-tools: Read, Write, Bash, Grep
 ---
 
 # Practice Exam - 互動式練習考試技能
 
-> 提供真實考試般的互動式答題體驗，即時反饋與深度解析
+> 提供真實考試般的互動式答題體驗，即時反饋與錯題追蹤
 
 ---
 
@@ -15,7 +15,7 @@ allowed-tools: Read, Write, Bash, Grep
 此技能用於提供**互動式答題練習**，模擬真實考試體驗，確保：
 1. **逐題作答** - 一次顯示一題，避免干擾
 2. **即時反饋** - 作答後立即顯示對錯與解析
-3. **深度解析** - 答錯時自動調用 `explain-why-not` 深入講解
+3. **錯題導向** - 答錯時提示回看該題完整解析並寫入錯題本
 4. **記錄追蹤** - 保存答題歷史，供後續分析使用
 
 ---
@@ -68,7 +68,7 @@ allowed-tools: Read, Write, Bash, Grep
 
 ## 第 1/5 題
 
-**題目 ID:** Q-01-023
+**題目 ID:** Q-023
 
 在 Delta Lake 中，您需要永久刪除超過 30 天的舊版本資料以節省儲存空間。
 以下哪個指令可以達成此目的？
@@ -171,11 +171,11 @@ VACUUM 指令的 RETAIN 參數**只接受 HOURS 作為單位**，無法直接使
 
 | 題號 | 題目 ID | 您的答案 | 正確答案 | 結果 |
 |------|---------|----------|----------|------|
-| 1 | Q-01-023 | A | B | ❌ |
-| 2 | Q-01-007 | A | A | ✅ |
-| 3 | Q-01-015 | C | C | ✅ |
-| 4 | Q-01-042 | B | D | ❌ |
-| 5 | Q-01-031 | B | B | ✅ |
+| 1 | Q-023 | A | B | ❌ |
+| 2 | Q-007 | A | A | ✅ |
+| 3 | Q-015 | C | C | ✅ |
+| 4 | Q-042 | B | D | ❌ |
+| 5 | Q-031 | B | B | ✅ |
 
 ---
 
@@ -191,12 +191,12 @@ VACUUM 指令的 RETAIN 參數**只接受 HOURS 作為單位**，無法直接使
 
 ### 下一步行動
 1. 使用 `/review-mistakes` 複習錯題
-2. 使用 `/weak-topic-analysis` 分析弱點主題
-3. 針對 Delta-Lake 主題進行專項訓練
+2. 使用 `/practice-exam --topic Delta-Lake` 進行主題訓練
+3. 回看該題完整解析檔案，整理自己的陷阱筆記
 
 ---
 
-**答題記錄已保存至:** `.claude-exam-helper/user_data/practice_history.json`
+**答題記錄已保存至:** `~/.claude-exam-helper/user_data/practice_history.json`
 ```
 
 ---
@@ -210,7 +210,7 @@ VACUUM 指令的 RETAIN 參數**只接受 HOURS 作為單位**，無法直接使
 
 ### 2. 智能解析
 - 答對時提供簡短提示
-- 答錯時自動深度解析（調用 `explain-why-not` 邏輯）
+- 答錯時提示查看該題完整解析檔案
 - 包含記憶口訣與解題技巧
 
 ### 3. 進度追蹤
@@ -243,7 +243,7 @@ VACUUM 指令的 RETAIN 參數**只接受 HOURS 作為單位**，無法直接使
 
 ## 第 1/3 題
 
-**題目 ID:** Q-01-023
+**題目 ID:** Q-023
 
 [題目內容...]
 
@@ -306,7 +306,7 @@ B
 
 ## 第 1/8 題
 
-**題目 ID:** Q-01-023 ⚠️ [錯誤 2 次]
+**題目 ID:** Q-023 ⚠️ [錯誤 2 次]
 
 [題目內容...]
 ```
@@ -518,8 +518,8 @@ def save_practice_history(session):
 
 ## 🔗 技能整合
 
-### 與 explain-why-not 整合
-答錯時自動調用深度解析邏輯，提供三層次拆解
+### 與 explain-why-not 搭配使用
+答錯後可手動使用 `explain-why-not` 深入拆解特定誤選選項
 
 ### 與 review-mistakes 整合
 - 答錯的題目自動加入錯題本
@@ -546,7 +546,7 @@ def save_practice_history(session):
       },
       "results": [
         {
-          "question_id": "Q-01-023",
+          "question_id": "Q-023",
           "user_answer": "A",
           "correct_answer": "B",
           "correct": false,
@@ -568,14 +568,14 @@ def save_practice_history(session):
 ### Phase 1: 核心功能 ✅
 - [x] 基本答題流程
 - [x] 即時反饋
-- [x] 答錯時深度解析
+- [x] 答錯時錯題記錄與解析提示
 - [x] 保存答題記錄
 
 ### Phase 2: 進階功能
 - [ ] 支援多選題
 - [ ] 計時功能
 - [ ] 答題統計圖表
-- [ ] 與 review-mistakes 完整整合
+- [x] 與 review-mistakes 完整整合
 
 ### Phase 3: 優化
 - [ ] 自適應難度調整
@@ -615,7 +615,7 @@ def save_practice_history(session):
 - [solve-question](../solve-question/SKILL.md) - 題目解析技能
 - [explain-why-not](../explain-why-not/SKILL.md) - 錯誤選項深度拆解
 - [review-mistakes](../review-mistakes/SKILL.md) - 錯題本管理
-- [question-template.md](../../question-bank/_template/question-template.md) - 題目標準格式
+- [question-template.md](../../../question-bank/_template/question-template.md) - 題目標準格式
 
 ---
 

@@ -14,7 +14,7 @@ Databricks Certified Data Engineer 考試專家：題目解析、陷阱識別、
 - `question-bank/by-topic/` - 題目按主題分類
 - `tooling/tagging-schema.md` - **必讀**標籤規範
 - `docs/exam-map/` - 考綱映射
-- `progress/` - 錯題與進度追蹤
+- `~/.claude-exam-helper/user_data/` - 錯題與練習記錄（`mistakes.json`, `practice_history.json`）
 
 ---
 
@@ -30,7 +30,7 @@ Databricks Certified Data Engineer 考試專家：題目解析、陷阱識別、
    - Level Tag (必須1個): L1-Basic / L2-Intermediate / L3-Advanced
 3. 建立檔案：
    - `by-order_v1/Q-XXX.md`（⚠️ 題目+解析合併同一檔案）
-   - 複製到 `by-topic/[對應主題]/Q-XXX.md`
+   - 複製到 `by-topic/[對應主題]/Q-XXX_{batch}.md`（例如 `Q-023_b4.md`）
 
 **檔案結構：**
 ```
@@ -70,7 +70,7 @@ Q-XXX.md
 ### 4️⃣ 複習計畫（觸發：「N天後考試」）
 
 **步驟：**
-1. 從 `progress/` 分析錯題統計 → 識別弱點主題
+1. 從 `~/.claude-exam-helper/user_data/mistakes.json` 分析錯題統計 → 識別弱點主題
 2. 產生每日計畫：
    - 優先複習高錯誤率主題
    - 安排必做錯題 + 新題練習
@@ -136,4 +136,3 @@ Q-XXX.md
 2. 嚴格遵循規範（模板/標籤/命名）
 3. 教學優先（解釋原理，不只給答案）
 4. 追蹤進度（記錄錯題，產生個人化建議）
-

@@ -41,7 +41,7 @@ allowed-tools: Read, Write, Bash
 /review-mistakes --retry --topic Streaming
 
 # 標記題目為已精通
-/review-mistakes --mark-mastered Q-01-023
+/review-mistakes --mark-mastered Q-023
 
 # 清除已精通的題目
 /review-mistakes --clear-mastered
@@ -106,7 +106,7 @@ allowed-tools: Read, Write, Bash
 ## 📈 複習進度
 
 **最近一次複習:** 2026-01-08
-**複習次數最多的題目:** Q-01-023 (4 次)
+**複習次數最多的題目:** Q-023 (4 次)
 **進步最明顯的主題:** Cluster-Management (60% → 80%)
 
 ---
@@ -138,10 +138,10 @@ allowed-tools: Read, Write, Bash
 
 | 題目 ID | 錯誤次數 | 上次答題 | 狀態 |
 |---------|---------|----------|------|
-| Q-01-023 | 4 次 | 2026-01-08 | 🔴 需加強 |
-| Q-01-031 | 3 次 | 2026-01-07 | 🔴 需加強 |
-| Q-01-042 | 2 次 | 2026-01-09 | 🟡 練習中 |
-| Q-01-015 | 1 次 | 2026-01-06 | 🟢 接近精通 |
+| Q-023 | 4 次 | 2026-01-08 | 🔴 需加強 |
+| Q-031 | 3 次 | 2026-01-07 | 🔴 需加強 |
+| Q-042 | 2 次 | 2026-01-09 | 🟡 練習中 |
+| Q-015 | 1 次 | 2026-01-06 | 🟢 接近精通 |
 
 [點擊題目 ID 查看詳細解析]
 
@@ -155,9 +155,9 @@ allowed-tools: Read, Write, Bash
 
 | 題目 ID | 主題 | 精通日期 |
 |---------|------|----------|
-| Q-01-007 | MLflow | 2026-01-05 |
-| Q-01-018 | Delta-Lake | 2026-01-04 |
-| Q-01-025 | Cluster | 2026-01-03 |
+| Q-007 | MLflow | 2026-01-05 |
+| Q-018 | Delta-Lake | 2026-01-04 |
+| Q-025 | Cluster | 2026-01-03 |
 ```
 
 ---
@@ -176,7 +176,7 @@ allowed-tools: Read, Write, Bash
 
 ## 第 1/12 題  ⚠️ [錯誤 4 次]
 
-**題目 ID:** Q-01-023
+**題目 ID:** Q-023
 **主題:** Delta-Lake, Data-Retention
 **上次答錯:** 2026-01-08
 
@@ -241,7 +241,7 @@ allowed-tools: Read, Write, Bash
   "last_updated": "2026-01-09T15:30:00",
   "mistakes": [
     {
-      "question_id": "Q-01-023",
+      "question_id": "Q-023",
       "first_wrong_date": "2026-01-05T10:30:00",
       "attempts": [
         {
@@ -488,9 +488,9 @@ def mark_as_mastered(question_id):
 - `practice-exam` 答錯時自動調用 `add_mistake()`
 - `review-mistakes --retry` 調用 `practice-exam` 並傳入錯題 ID
 
-### 與 weak-topic-analysis 整合
-- 提供錯題資料供分析使用
-- 弱點分析結果可用於生成專項訓練
+### 與外部分析技能整合
+- 目前僅提供錯題資料輸出與統計
+- 若未來新增弱點分析技能，可直接復用 `mistakes.json`
 
 ---
 
@@ -519,8 +519,8 @@ def mark_as_mastered(question_id):
 - [x] 錯題複習模式
 
 ### Phase 2: 進階功能
-- [ ] 自動精通判定
-- [ ] 匯入/匯出功能
+- [x] 自動精通判定
+- [x] 匯入/匯出功能
 - [ ] 複習提醒
 - [ ] 進度趨勢圖表
 
@@ -561,8 +561,6 @@ def mark_as_mastered(question_id):
 ## 📚 相關資源
 
 - [practice-exam](../practice-exam/SKILL.md) - 互動式練習考試
-- [spaced-review](../spaced-review/SKILL.md) - 間隔複習系統（待實作）
-- [weak-topic-analysis](../weak-topic-analysis/SKILL.md) - 弱點主題分析（待實作）
 
 ---
 

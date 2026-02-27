@@ -5,7 +5,6 @@ Interactive Practice Exam for Databricks Exam Helper
 互動式練習考試，提供逐題答題、即時反饋、深度解析功能
 """
 
-import os
 import sys
 import json
 import random
@@ -14,6 +13,17 @@ import argparse
 from pathlib import Path
 from typing import List, Dict, Optional
 from datetime import datetime
+
+# Optional integration with review-mistakes skill.
+REVIEW_SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "review-mistakes" / "scripts"
+if REVIEW_SCRIPTS_DIR.exists():
+    sys.path.insert(0, str(REVIEW_SCRIPTS_DIR))
+
+try:
+    from mistake_tracker import add_mistake, get_not_mastered_ids
+except Exception:
+    add_mistake = None
+    get_not_mastered_ids = None
 
 
 def find_question_bank_root(source: str = "by-order_v1") -> Path:
@@ -214,8 +224,6 @@ def load_questions(args) -> List[Dict]:
     Returns:
         List[Dict]: 題目列表
     """
-    # TODO: 支援 review_mode 從錯題本載入
-
     # 從題庫載入
     question_bank_path = find_question_bank_root(args.source)
     all_files = get_all_question_files(question_bank_path)
@@ -227,12 +235,38 @@ def load_questions(args) -> List[Dict]:
         if parsed:
             all_questions.append(parsed)
 
-    # 應用篩選條件
-    filtered = filter_questions(
-        all_questions,
-        topic=args.topic,
-        level=args.level
-    )
+    # 錯題複習模式：優先從錯題本載入題目
+    if args.review_mode:
+        if get_not_mastered_ids is None:
+            print("⚠️ 找不到錯題本模組，改用一般題庫模式")
+        else:
+            review_ids = get_not_mastered_ids(topic=args.topic)
+            if not review_ids:
+                print("⚠️ 錯題本中沒有符合條件的未精通題目")
+                return []
+
+            questions_by_id = {q['id']: q for q in all_questions}
+            filtered_review = [questions_by_id[qid] for qid in review_ids if qid in questions_by_id]
+
+            # review-mode 仍支援難度篩選
+            if args.level:
+                filtered_review = [
+                    q for q in filtered_review
+                    if q.get('level', '').lower() == args.level.lower()
+                ]
+
+            if not filtered_review:
+                print("⚠️ 錯題本有記錄，但在目前題庫來源找不到對應題目")
+                return []
+
+            if args.seed is not None:
+                random.seed(args.seed)
+                random.shuffle(filtered_review)
+
+            return filtered_review[:min(args.count, len(filtered_review))]
+
+    # 一般模式：應用主題與難度篩選
+    filtered = filter_questions(all_questions, topic=args.topic, level=args.level)
 
     if not filtered:
         print(f"⚠️ 警告: 沒有找到符合條件的題目")
@@ -309,9 +343,6 @@ def show_incorrect_feedback(question: Dict, user_answer: str):
     # 提示查看完整解析
     print(f"💡 **提示:** 可查看完整解析了解詳細說明")
     print(f"   檔案位置: {question['file_path']}")
-
-    # 記錄到錯題本（待實作）
-    print("\n💾 **已將此題加入錯題本**")
 
     print("\n" + "-"*70)
     input("\n[按 Enter 繼續下一題...]")
@@ -424,7 +455,7 @@ def generate_report(session: Dict) -> str:
     else:
         lines.append("1. 表現優秀！繼續保持")
         lines.append("2. 可以嘗試更高難度的題目")
-        lines.append("3. 使用 `/test-skills` 進行模擬考試")
+        lines.append("3. 使用 `/practice-exam --count 20 --seed 42` 進行模擬考試")
 
     lines.append("\n" + "="*70 + "\n")
 
@@ -520,6 +551,17 @@ def start_practice_exam(args):
         if result['correct']:
             show_correct_feedback(question)
         else:
+            if add_mistake is not None:
+                add_mistake(
+                    question_id=question['id'],
+                    user_answer=user_answer,
+                    correct_answer=question['answer'],
+                    topics=question.get('topics', []),
+                    traps=question.get('traps', []),
+                    level=question.get('level')
+                )
+            else:
+                print("\n⚠️ 無法寫入錯題本（mistake_tracker 不可用）")
             show_incorrect_feedback(question, user_answer)
 
     # 生成成績報告

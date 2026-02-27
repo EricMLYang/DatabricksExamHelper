@@ -28,7 +28,7 @@ allowed-tools: Read, Edit, Write, Grep
 
 ### 必要資訊
 ```markdown
-**題目 ID:** Q-XXX-XXX
+**題目 ID:** Q-XXX
 **題幹:** [題目描述]
 **錯誤選項:** [A/B/C/D]
 **選項內容:** [完整選項文字]

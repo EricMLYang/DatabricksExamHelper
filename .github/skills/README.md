@@ -16,7 +16,7 @@
 **使用方式：**
 ```bash
 # 提供題目 ID 和基本資訊
-/solve-question Q-01-023
+/solve-question Q-023
 ```
 
 ---
@@ -29,30 +29,14 @@
 **使用方式：**
 ```bash
 # 指定題目和錯誤選項
-/explain-why-not Q-01-023 --wrong-option A
+/explain-why-not Q-023 --wrong-option A
 ```
 
 ---
 
 ### 📝 練習與測驗類
 
-#### 3. **test-skills** - 模擬測驗生成
-> 從題庫隨機挑選題目生成標準格式的模擬測驗，答案放在檔案最下方
-
-**使用時機：** 模擬考試環境，或想要一次看多題題目
-
-**使用方式：**
-```bash
-# 生成 10 題測驗
-python .github/skills/test-skills/scripts/random_questions.py --count 10
-
-# 指定隨機種子（可重現）
-python .github/skills/test-skills/scripts/random_questions.py --seed 42
-```
-
----
-
-#### 4. **practice-exam** ⭐ 新增 - 互動式練習考試
+#### 3. **practice-exam** ⭐ 新增 - 互動式練習考試
 > 逐題顯示、收集答案、即時反饋、深度解析，提供真實考試般的互動體驗
 
 **使用時機：** 日常練習、考前訓練、想要即時反饋
@@ -79,7 +63,7 @@ python .github/skills/practice-exam/scripts/interactive_exam.py \
 **特色功能：**
 - ✅ 一次顯示一題，減少干擾
 - ✅ 即時反饋（答對/答錯）
-- ✅ 答錯時自動深度解析
+- ✅ 答錯時顯示解析提示與來源檔案
 - ✅ 生成成績報告與建議
 - ✅ 自動記錄到錯題本
 
@@ -87,7 +71,7 @@ python .github/skills/practice-exam/scripts/interactive_exam.py \
 
 ### 📚 複習與分析類
 
-#### 5. **review-mistakes** ⭐ 新增 - 錯題本管理
+#### 4. **review-mistakes** ⭐ 新增 - 錯題本管理
 > 追蹤答錯的題目、分析錯題模式、生成專屬錯題測驗、標記已精通題目
 
 **使用時機：** 複習錯題、分析弱點、追蹤進步
@@ -104,7 +88,7 @@ python .github/skills/review-mistakes/scripts/mistake_tracker.py --list
 python .github/skills/review-mistakes/scripts/mistake_tracker.py --list --topic Delta-Lake
 
 # 標記題目為已精通
-python .github/skills/review-mistakes/scripts/mistake_tracker.py --mark-mastered Q-01-023
+python .github/skills/review-mistakes/scripts/mistake_tracker.py --mark-mastered Q-023
 
 # 清除已精通的題目
 python .github/skills/review-mistakes/scripts/mistake_tracker.py --clear-mastered
@@ -133,7 +117,7 @@ python .github/skills/review-mistakes/scripts/mistake_tracker.py --import my_mis
 python .github/skills/practice-exam/scripts/interactive_exam.py --count 10
 
 # 2. 答錯的題目自動加入錯題本
-# 3. 系統會即時顯示深度解析
+# 3. 系統會提示查看完整解析檔案
 ```
 
 ### Phase 2: 複習錯題
@@ -150,11 +134,8 @@ python .github/skills/practice-exam/scripts/interactive_exam.py --topic Delta-La
 
 ### Phase 3: 模擬考試
 ```bash
-# 生成完整的模擬測驗
-python .github/skills/test-skills/scripts/random_questions.py --count 20 > mock_exam.md
-
-# 或使用互動式模擬考（更真實）
-python .github/skills/practice-exam/scripts/interactive_exam.py --count 20
+# 使用互動式模擬考（更真實）
+python .github/skills/practice-exam/scripts/interactive_exam.py --count 20 --seed 42
 ```
 
 ---
@@ -188,15 +169,15 @@ cp ~/.claude-exam-helper/user_data/practice_history.json \
 ## 🎯 推薦使用順序
 
 ### 對於初學者
-1. **test-skills** - 先生成題目瀏覽，了解考試內容
+1. **practice-exam** - 先做互動式練習，快速建立題感
 2. **solve-question** - 查看完整解析，理解考點
-3. **practice-exam** - 開始互動式練習
+3. **explain-why-not** - 針對誤選選項深挖陷阱
 4. **review-mistakes** - 定期複習錯題
 
 ### 對於準備考試者
 1. **practice-exam** - 每天進行定量練習（10-20 題）
 2. **review-mistakes** - 每 2-3 天複習錯題
-3. **test-skills** - 考前進行完整模擬測驗
+3. **practice-exam** - 考前進行完整模擬測驗（20 題以上）
 4. **explain-why-not** - 深入理解容易誤選的選項
 
 ---
@@ -234,7 +215,6 @@ chmod +x .github/skills/review-mistakes/scripts/mistake_tracker.py
 - [review-mistakes 詳細文件](./review-mistakes/SKILL.md)
 - [solve-question 詳細文件](./solve-question/SKILL.md)
 - [explain-why-not 詳細文件](./explain-why-not/SKILL.md)
-- [test-skills 詳細文件](./test-skills/SKILL.md)
 
 ---
 
