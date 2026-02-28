@@ -28,7 +28,7 @@
 - [ ] 使用 `question-bank/_template/question-template.md` 建立題目
 - [ ] 使用 `question-bank/_template/analysis-template.md` 建立解析
 - [ ] 檔案命名符合規範：`Q-{來源}-{序號}-{question|analysis}.md`
-- [ ] 標籤符合 `tooling/tagging-schema.md` 規範
+- [ ] 標籤符合 `.github/skills/tagging-schema/references/tagging-schema.md` 規範
 - [ ] 解析包含至少 1 個官方文件引用
 - [ ] 每個錯誤選項都有明確的排除理由
 
@@ -218,7 +218,7 @@ git push origin feature/q-delta-023
 - [ ] 術語使用一致（如 "串流" vs "Streaming" 需統一）
 
 #### 4. 標籤規範性 ✅
-- [ ] Topic Tags 符合 `tooling/tagging-schema.md` 定義
+- [ ] Topic Tags 符合 `.github/skills/tagging-schema/references/tagging-schema.md` 定義
 - [ ] Trap Tags 正確標記混淆點
 - [ ] 難度等級合理（L1/L2/L3）
 
@@ -302,7 +302,7 @@ Add: Q-UNITY-042 Unity Catalog 權限管理題目
 **問題:** 使用 `delta` 而非 `Delta-Lake`
 
 **正確做法:**
-- 參考 `tooling/tagging-schema.md` 的標準標籤清單
+- 參考 `.github/skills/tagging-schema/references/tagging-schema.md` 的標準標籤清單
 - 使用一致的大小寫與連字符
 
 ---
@@ -359,8 +359,8 @@ question-bank/by-topic/Q-DELTA-023-analysis.md
 ## 📞 需要協助？
 
 如有任何疑問，請：
-1. 查閱 [README.md](../README.md) 快速開始指南
-2. 參考 [tooling/tagging-schema.md](./tagging-schema.md) 標籤規範
+1. 查閱 [README.md](../../../../README.md) 快速開始指南
+2. 參考 [tagging-schema.md](../../tagging-schema/references/tagging-schema.md) 標籤規範
 3. 開 [GitHub Issue](https://github.com/your-org/databricks-cert-agent/issues) 提問
 4. 聯絡專案維護者
 

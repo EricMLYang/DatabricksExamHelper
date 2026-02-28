@@ -32,7 +32,7 @@
    - 核心考點 (Key Concepts)
 
 ### 第二步：標籤與分類
-1. 參考 `tooling/tagging-schema.md` 決定標籤：
+1. 參考 `.github/skills/tagging-schema/references/tagging-schema.md` 決定標籤：
    - **Topic Tags**: 1-3 個核心技術標籤 (如 `Streaming`, `Unity-Catalog`)。
    - **Trap Tags**: 0-2 個陷阱標籤 (如 `Syntax-Confusion`)。
    - **Level Tag**: 1 個難度標籤 (`L1`/`L2`/`L3`)。

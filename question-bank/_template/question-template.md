@@ -29,7 +29,7 @@
 
 ### 難度等級
 <!--
-根據 tooling/tagging-schema.md 的 Level Tags 定義
+根據 .github/skills/tagging-schema/references/tagging-schema.md 的 Level Tags 定義
 - L1-Basic: 基礎概念題
 - L2-Intermediate: 中階應用題
 - L3-Advanced: 進階情境題
@@ -73,7 +73,7 @@
 
 ### Topic Tags (技術主題標籤)
 <!--
-根據 tooling/tagging-schema.md 定義的 Topic Tags
+根據 .github/skills/tagging-schema/references/tagging-schema.md 定義的 Topic Tags
 可多選，用逗號分隔
 範例：Delta-Lake, Streaming, Performance-Tuning
 -->
@@ -83,7 +83,7 @@
 <!--
 標記此題容易混淆的陷阱類型
 範例：Syntax-Confusion, Parameter-Order, Similar-Function
-參考 tooling/tagging-schema.md 的 Trap Tags 定義
+參考 .github/skills/tagging-schema/references/tagging-schema.md 的 Trap Tags 定義
 -->
 **Traps:** `[Trap1]`, `[Trap2]`
 
@@ -172,7 +172,7 @@
 1. 複製此模板至適當的分類資料夾 (by-topic/ 或 by-mock/)
 2. 依據題目來源命名檔案 (例如：`Q-MOCK01-023-question.md`)
 3. 填寫所有必要欄位
-4. 使用 tooling/tagging-schema.md 確保標籤符合規範
+4. 使用 .github/skills/tagging-schema/references/tagging-schema.md 確保標籤符合規範
 5. 建立對應的 analysis 檔案 (使用 analysis-template.md)
 
 ### 欄位填寫優先順序

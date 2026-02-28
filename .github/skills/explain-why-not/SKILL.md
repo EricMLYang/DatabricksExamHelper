@@ -302,9 +302,8 @@ OPTIMIZE 用於**效能優化**（合併小檔案、重新排序），**不會�
 
 ## 📞 相關資源
 
-- [solve-question.md](./solve-question.md) - 完整題目解析技能
-- [generate-variants.md](./generate-variants.md) - 變形題生成技能
-- [tooling/tagging-schema.md](../../tooling/tagging-schema.md) - 陷阱標籤定義
+- [solve-question](../solve-question/SKILL.md) - 完整題目解析技能
+- [tagging-schema](../tagging-schema/references/tagging-schema.md) - 陷阱標籤定義
 
 ---
 

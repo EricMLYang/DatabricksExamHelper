@@ -303,16 +303,16 @@ OPTIMIZE 用於合併小檔案與重新排序資料（Z-Order），**不會刪�
 - [ ] 所有錯誤選項都有明確的排除理由
 - [ ] 至少提供 1 個官方文件連結
 - [ ] 包含記憶口訣或解題技巧
-- [ ] 標籤符合 `tooling/tagging-schema.md` 規範
+- [ ] 標籤符合 `.github/skills/tagging-schema/references/tagging-schema.md` 規範
 - [ ] 輸出結構符合 `analysis-template.md`
 
 ---
 
 ## 📞 相關資源
 
-- [analysis-template.md](../../question-bank/_template/analysis-template.md) - 標準解析模板
-- [tagging-schema.md](../../tooling/tagging-schema.md) - 標籤規範
-- [contribution-guide.md](../../tooling/contribution-guide.md) - 貢獻指南
+- [analysis-template.md](../../../question-bank/_template/analysis-template.md) - 標準解析模板
+- [tagging-schema.md](../tagging-schema/references/tagging-schema.md) - 標籤規範
+- [contribution-guide.md](../contribution-guide/references/contribution-guide.md) - 貢獻指南
 
 ---
 

@@ -47,7 +47,8 @@ allowed-tools: Read, Write, Bash, Grep
 | `--count` | 題目數量 | 10 | `--count 5` |
 | `--topic` | 主題篩選 | 全部 | `--topic Delta-Lake` |
 | `--level` | 難度篩選 | 全部 | `--level L2-Intermediate` |
-| `--source` | 題庫來源 | by-order_v1 | `--source by-topic` |
+| `--source` | 題庫來源 | by-order_b4 | `--source by-topic` |
+| `--era` | 題型時代篩選 (`new`/`old`/`all`) | all | `--era new` |
 | `--seed` | 隨機種子 | None | `--seed 42` |
 | `--review-mode` | 錯題複習模式 | false | `--review-mode` |
 
@@ -523,7 +524,8 @@ def save_practice_history(session):
 
 ### 與 review-mistakes 整合
 - 答錯的題目自動加入錯題本
-- 支援 `--review-mode` 從錯題本載入題目
+- 支援 `--review-mode` 從錯題本載入題目（優先到期題）
+- review-mode 跨題池回查題目（`b4 -> b3 -> b2 -> b1 -> v1`）
 
 ### 與 solve-question 整合
 顯示題目時可選擇性顯示完整解析連結
@@ -587,7 +589,7 @@ def save_practice_history(session):
 ## 🔍 品質檢查清單
 
 使用此技能前，請確認：
-- [ ] 題庫路徑正確（question-bank/by-order_v1/）
+- [ ] 題庫路徑正確（建議 `question-bank/by-order_b4/`）
 - [ ] Python 3.7+ 環境
 - [ ] 使用者資料目錄已建立（.claude-exam-helper/user_data/）
 - [ ] 題目檔案格式符合標準模板

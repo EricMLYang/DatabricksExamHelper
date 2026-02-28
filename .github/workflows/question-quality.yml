@@ -1,0 +1,48 @@
+name: Question Quality
+
+on:
+  pull_request:
+    paths:
+      - "question-bank/**"
+      - ".github/skills/question-quality-lint/**"
+      - ".github/skills/weak-topic-radar/**"
+      - ".github/skills/tagging-schema/references/tagging-schema.md"
+      - ".github/skills/practice-exam/scripts/interactive_exam.py"
+      - ".github/skills/review-mistakes/scripts/mistake_tracker.py"
+      - ".github/workflows/question-quality.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "question-bank/**"
+      - ".github/skills/question-quality-lint/**"
+      - ".github/skills/weak-topic-radar/**"
+      - ".github/skills/tagging-schema/references/tagging-schema.md"
+      - ".github/skills/practice-exam/scripts/interactive_exam.py"
+      - ".github/skills/review-mistakes/scripts/mistake_tracker.py"
+      - ".github/workflows/question-quality.yml"
+
+jobs:
+  question-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Lint Questions
+        run: python .github/skills/question-quality-lint/scripts/lint_questions.py
+
+      - name: Validate Scripts
+        run: |
+          python -m py_compile \
+            .github/skills/question-quality-lint/scripts/lint_questions.py \
+            .github/skills/weak-topic-radar/scripts/weak_topic_radar.py \
+            .github/skills/practice-exam/scripts/interactive_exam.py \
+            .github/skills/review-mistakes/scripts/mistake_tracker.py
+
+      - name: Generate Weak Topic Radar (Smoke Test)
+        run: python .github/skills/weak-topic-radar/scripts/weak_topic_radar.py --output /tmp/weak-topic-radar.md

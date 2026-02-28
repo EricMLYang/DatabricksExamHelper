@@ -13,7 +13,7 @@
 - 題目檔名請使用半形格式：`Q-001.md`。
 - 新增題目時請同步補上「答案說明」與「關鍵概念」。
 - 範例帳號、email、主機資訊請使用匿名資料（如 `user@example.com`）。
-- 新增模板或流程文件時，優先放在 `tooling/` 或 `question-bank/_template/`。
+- 新增模板或流程文件時，優先放在 `.github/skills/` 或 `question-bank/_template/`。
 
 ## Pull Request 建議流程
 

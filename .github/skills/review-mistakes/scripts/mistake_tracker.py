@@ -5,21 +5,35 @@ Mistake Tracker for Databricks Exam Helper
 錯題本管理系統，追蹤、分析、複習答錯的題目
 """
 
-import os
 import sys
 import json
 import argparse
 from pathlib import Path
 from typing import List, Dict, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
+
+REVIEW_INTERVAL_DAYS = [1, 3, 7, 14]
+
+
+def get_user_data_dir() -> Path:
+    """取得使用者資料目錄，若家目錄不可寫則回退到 /tmp。"""
+    preferred = Path.home() / '.claude-exam-helper' / 'user_data'
+    try:
+        preferred.mkdir(parents=True, exist_ok=True)
+        probe = preferred / '.write_probe'
+        probe.write_text('ok', encoding='utf-8')
+        probe.unlink(missing_ok=True)
+        return preferred
+    except OSError:
+        fallback = Path('/tmp/.claude-exam-helper/user_data')
+        fallback.mkdir(parents=True, exist_ok=True)
+        return fallback
 
 
 def get_mistakes_db_path() -> Path:
     """取得錯題本資料庫路徑"""
-    data_dir = Path.home() / '.claude-exam-helper' / 'user_data'
-    data_dir.mkdir(parents=True, exist_ok=True)
-    return data_dir / 'mistakes.json'
+    return get_user_data_dir() / 'mistakes.json'
 
 
 def load_mistakes_db() -> Dict:
@@ -98,11 +112,50 @@ def update_statistics(db: Dict):
     }
 
 
-def find_mistake(db: Dict, question_id: str) -> Optional[Dict]:
+def parse_iso_datetime(value: Optional[str]) -> Optional[datetime]:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).replace(tzinfo=None)
+    except Exception:
+        return None
+
+
+def build_next_review(stage: int, ref_time: Optional[datetime] = None) -> str:
+    now = ref_time or datetime.now()
+    idx = max(0, min(stage, len(REVIEW_INTERVAL_DAYS) - 1))
+    return (now + timedelta(days=REVIEW_INTERVAL_DAYS[idx])).isoformat()
+
+
+def is_due_for_review(mistake: Dict, ref_time: Optional[datetime] = None) -> bool:
+    if mistake.get('mastered', False):
+        return False
+    next_review = parse_iso_datetime(mistake.get('next_review_date'))
+    now = ref_time or datetime.now()
+    if next_review is None:
+        return True
+    return next_review <= now
+
+
+def find_mistake(db: Dict, question_id: str, question_batch: Optional[str] = None) -> Optional[Dict]:
     """查找錯題記錄"""
     for mistake in db['mistakes']:
-        if mistake['question_id'] == question_id:
+        if mistake['question_id'] != question_id:
+            continue
+        if question_batch and mistake.get('question_batch') and mistake.get('question_batch') != question_batch:
+            continue
+        if question_batch and not mistake.get('question_batch'):
+            # Legacy record without batch: keep as fallback only if no batch-specific record is found.
+            continue
+        if question_batch and mistake.get('question_batch') == question_batch:
             return mistake
+        if not question_batch:
+            return mistake
+    if question_batch:
+        # Fallback to legacy record (no batch field)
+        for mistake in db['mistakes']:
+            if mistake['question_id'] == question_id and not mistake.get('question_batch'):
+                return mistake
     return None
 
 
@@ -112,7 +165,8 @@ def add_mistake(
     correct_answer: str,
     topics: List[str] = None,
     traps: List[str] = None,
-    level: str = None
+    level: str = None,
+    question_batch: str = None,
 ):
     """
     添加或更新錯題記錄
@@ -126,44 +180,65 @@ def add_mistake(
         level: 難度等級
     """
     db = load_mistakes_db()
-    mistake = find_mistake(db, question_id)
+    mistake = find_mistake(db, question_id, question_batch=question_batch)
 
     is_correct = (user_answer == correct_answer)
+    now = datetime.now()
 
     attempt = {
-        'date': datetime.now().isoformat(),
+        'date': now.isoformat(),
         'user_answer': user_answer,
         'correct_answer': correct_answer,
-        'correct': is_correct
+        'correct': is_correct,
     }
 
     if mistake:
         # 更新現有記錄
         mistake['attempts'].append(attempt)
+        if question_batch and not mistake.get('question_batch'):
+            mistake['question_batch'] = question_batch
 
         if is_correct:
             mistake['correct_count'] = mistake.get('correct_count', 0) + 1
             mistake['consecutive_correct'] = mistake.get('consecutive_correct', 0) + 1
+            stage = min(mistake.get('review_stage', 0) + 1, len(REVIEW_INTERVAL_DAYS) - 1)
+            mistake['review_stage'] = stage
+            mistake['last_review_date'] = now.isoformat()
 
             # 連續答對 3 次標記為已精通
             if mistake['consecutive_correct'] >= 3:
                 mistake['mastered'] = True
-                mistake['mastered_date'] = datetime.now().isoformat()
+                mistake['mastered_date'] = now.isoformat()
+                mistake['next_review_date'] = None
                 print(f"\n🎉 恭喜！{question_id} 已精通！")
+            else:
+                mistake['next_review_date'] = build_next_review(stage, now)
         else:
             mistake['wrong_count'] = mistake.get('wrong_count', 0) + 1
             mistake['consecutive_correct'] = 0
+            mistake['mastered'] = False
+            mistake['mastered_date'] = None
+            mistake['review_stage'] = 0
+            mistake['last_review_date'] = now.isoformat()
+            mistake['next_review_date'] = build_next_review(0, now)
     else:
+        initial_stage = 1 if is_correct else 0
+        next_review_date = None if (is_correct and initial_stage >= len(REVIEW_INTERVAL_DAYS)) else build_next_review(initial_stage, now)
+
         # 新增記錄
         db['mistakes'].append({
             'question_id': question_id,
-            'first_wrong_date': datetime.now().isoformat(),
+            'question_batch': question_batch,
+            'first_wrong_date': now.isoformat(),
             'attempts': [attempt],
             'wrong_count': 0 if is_correct else 1,
             'correct_count': 1 if is_correct else 0,
             'consecutive_correct': 1 if is_correct else 0,
             'mastered': False,
             'mastered_date': None,
+            'review_stage': initial_stage,
+            'last_review_date': now.isoformat(),
+            'next_review_date': next_review_date,
             'topics': topics or [],
             'traps': traps or [],
             'level': level or '',
@@ -187,6 +262,10 @@ def show_statistics():
     print(f"**總錯題數:** {stats['total_mistakes']} 題")
     print(f"**未精通:** {stats['not_mastered']} 題")
     print(f"**已精通:** {stats['mastered']} 題")
+
+    db = load_mistakes_db()
+    due_count = sum(1 for m in db['mistakes'] if is_due_for_review(m))
+    print(f"**到期待複習:** {due_count} 題")
 
     print("\n" + "-"*70)
 
@@ -233,7 +312,7 @@ def show_statistics():
             top_trap = max(stats['traps'].items(), key=lambda x: x[1])[0]
             print(f"2. **注意陷阱:** 特別留意 {top_trap} 類型的題目")
 
-        print(f"3. **複習頻率:** 建議每 2-3 天複習一次錯題")
+        print("3. **複習頻率:** 依到期題每日複習（1/3/7/14 天間隔）")
         print("\n使用以下指令開始錯題複習：")
         print("python .github/skills/practice-exam/scripts/interactive_exam.py --review-mode")
     else:
@@ -283,8 +362,8 @@ def list_mistakes(topic: Optional[str] = None, include_mastered: bool = False):
 
     for topic_name, topic_mistakes in sorted(grouped.items()):
         print(f"\n### {topic_name} ({len(topic_mistakes)} 題)\n")
-        print("| 題目 ID | 錯誤次數 | 連續答對 | 狀態 |")
-        print("|---------|---------|---------|------|")
+        print("| 題目 ID | 錯誤次數 | 連續答對 | 下次複習 | 狀態 |")
+        print("|---------|---------|---------|---------|------|")
 
         # 按錯誤次數排序
         topic_mistakes.sort(key=lambda x: x.get('wrong_count', 0), reverse=True)
@@ -292,6 +371,8 @@ def list_mistakes(topic: Optional[str] = None, include_mastered: bool = False):
         for m in topic_mistakes:
             wrong_count = m.get('wrong_count', 0)
             consecutive = m.get('consecutive_correct', 0)
+
+            next_review = mistake_next_review_display(m)
 
             # 狀態判定
             if wrong_count >= 3 and consecutive < 2:
@@ -303,7 +384,7 @@ def list_mistakes(topic: Optional[str] = None, include_mastered: bool = False):
             else:
                 status = "⚪ 新錯題"
 
-            print(f"| {m['question_id']} | {wrong_count} 次 | {consecutive} 次 | {status} |")
+            print(f"| {m['question_id']} | {wrong_count} 次 | {consecutive} 次 | {next_review} | {status} |")
 
     print("\n" + "="*70 + "\n")
 
@@ -319,6 +400,7 @@ def mark_as_mastered(question_id: str):
         else:
             mistake['mastered'] = True
             mistake['mastered_date'] = datetime.now().isoformat()
+            mistake['next_review_date'] = None
             save_mistakes_db(db)
             print(f"✅ {question_id} 已標記為「已精通」")
     else:
@@ -397,7 +479,54 @@ def import_mistakes(input_file: str):
         print(f"❌ 匯入失敗: {e}")
 
 
-def get_not_mastered_ids(topic: Optional[str] = None) -> List[str]:
+def mistake_next_review_display(mistake: Dict) -> str:
+    if mistake.get('mastered', False):
+        return "—"
+    next_review = parse_iso_datetime(mistake.get('next_review_date'))
+    if not next_review:
+        return "Now"
+    if next_review <= datetime.now():
+        return "Due"
+    return next_review.strftime("%m-%d")
+
+
+def get_not_mastered_items(topic: Optional[str] = None, due_only: bool = False) -> List[Dict]:
+    """
+    取得未精通題目（可選僅到期）
+
+    Args:
+        topic: 主題篩選
+        due_only: 只取到期題目
+    """
+    db = load_mistakes_db()
+    now = datetime.now()
+
+    items = []
+    for m in db['mistakes']:
+        if m.get('mastered', False):
+            continue
+        if topic and not any(topic.lower() in t.lower() for t in m.get('topics', [])):
+            continue
+        due = is_due_for_review(m, now)
+        if due_only and not due:
+            continue
+        items.append({
+            'question_id': m['question_id'],
+            'question_batch': m.get('question_batch'),
+            'due': due,
+            'next_review_date': m.get('next_review_date'),
+            'wrong_count': m.get('wrong_count', 0),
+        })
+
+    def sort_key(item: Dict):
+        next_dt = parse_iso_datetime(item.get('next_review_date')) or datetime.min
+        return (0 if item['due'] else 1, next_dt, -item['wrong_count'])
+
+    items.sort(key=sort_key)
+    return items
+
+
+def get_not_mastered_ids(topic: Optional[str] = None, due_only: bool = False) -> List[str]:
     """
     取得未精通的題目 ID 列表
 
@@ -407,23 +536,7 @@ def get_not_mastered_ids(topic: Optional[str] = None) -> List[str]:
     Returns:
         題目 ID 列表
     """
-    db = load_mistakes_db()
-
-    not_mastered = [
-        m for m in db['mistakes']
-        if not m.get('mastered', False)
-    ]
-
-    if topic:
-        not_mastered = [
-            m for m in not_mastered
-            if any(topic.lower() in t.lower() for t in m.get('topics', []))
-        ]
-
-    # 按錯誤次數排序（錯誤多的優先）
-    not_mastered.sort(key=lambda x: x.get('wrong_count', 0), reverse=True)
-
-    return [m['question_id'] for m in not_mastered]
+    return [m['question_id'] for m in get_not_mastered_items(topic=topic, due_only=due_only)]
 
 
 def main():

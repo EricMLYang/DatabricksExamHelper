@@ -35,10 +35,10 @@ allowed-tools: Read, Write, Bash
 /review-mistakes --list --topic Delta-Lake
 
 # 開始錯題複習（所有未精通的題目）
-/review-mistakes --retry
+python .github/skills/practice-exam/scripts/interactive_exam.py --review-mode
 
 # 複習特定主題的錯題
-/review-mistakes --retry --topic Streaming
+python .github/skills/practice-exam/scripts/interactive_exam.py --review-mode --topic Streaming
 
 # 標記題目為已精通
 /review-mistakes --mark-mastered Q-023
@@ -60,7 +60,7 @@ allowed-tools: Read, Write, Bash
 | `--show-stats` | 顯示錯題統計 | `--show-stats` |
 | `--list` | 列出錯題清單 | `--list` |
 | `--topic` | 主題篩選 | `--topic Delta-Lake` |
-| `--retry` | 開始錯題複習 | `--retry` |
+| `--review-mode` | 在 practice-exam 啟用錯題複習 | `interactive_exam.py --review-mode` |
 | `--mark-mastered` | 標記為已精通 | `--mark-mastered Q-001` |
 | `--clear-mastered` | 清除已精通題目 | `--clear-mastered` |
 | `--export` | 匯出錯題本 | `--export file.json` |
@@ -115,9 +115,9 @@ allowed-tools: Read, Write, Bash
 
 1. **優先複習:** Delta-Lake 主題（錯題最多）
 2. **注意陷阱:** 特別留意 Unit-Confusion 類型的題目
-3. **複習頻率:** 建議每 2-3 天複習一次錯題
+3. **複習頻率:** 依到期題每日複習（1/3/7/14 天間隔）
 
-使用 `/review-mistakes --retry --topic Delta-Lake` 開始專項訓練
+使用 `python .github/skills/practice-exam/scripts/interactive_exam.py --review-mode --topic Delta-Lake` 開始專項訓練
 ```
 
 ---
@@ -136,12 +136,12 @@ allowed-tools: Read, Write, Bash
 
 ### Delta-Lake (6 題)
 
-| 題目 ID | 錯誤次數 | 上次答題 | 狀態 |
+| 題目 ID | 錯誤次數 | 下次複習 | 狀態 |
 |---------|---------|----------|------|
-| Q-023 | 4 次 | 2026-01-08 | 🔴 需加強 |
-| Q-031 | 3 次 | 2026-01-07 | 🔴 需加強 |
-| Q-042 | 2 次 | 2026-01-09 | 🟡 練習中 |
-| Q-015 | 1 次 | 2026-01-06 | 🟢 接近精通 |
+| Q-023 | 4 次 | Due | 🔴 需加強 |
+| Q-031 | 3 次 | 01-09 | 🔴 需加強 |
+| Q-042 | 2 次 | 01-10 | 🟡 練習中 |
+| Q-015 | 1 次 | 01-12 | 🟢 接近精通 |
 
 [點擊題目 ID 查看詳細解析]
 
@@ -162,7 +162,7 @@ allowed-tools: Read, Write, Bash
 
 ---
 
-### 3. 錯題複習模式 (`--retry`)
+### 3. 錯題複習模式（practice-exam `--review-mode`）
 
 ```markdown
 # 📝 錯題複習模式
@@ -170,7 +170,7 @@ allowed-tools: Read, Write, Bash
 從錯題本載入題目...
 
 **未精通題目:** 12 題
-**複習策略:** 優先複習錯誤次數多的題目
+**複習策略:** 優先複習已到期題目，無到期題時回退未精通題
 
 ---
 
@@ -221,6 +221,7 @@ allowed-tools: Read, Write, Bash
 
 ### 3. 進度追蹤
 - 追蹤每題的複習次數
+- 間隔複習排程（1/3/7/14 天）
 - 自動判斷掌握程度（需加強/練習中/接近精通）
 - 連續答對 3 次自動標記為「已精通」
 
@@ -268,6 +269,9 @@ allowed-tools: Read, Write, Bash
       "consecutive_correct": 1,
       "mastered": false,
       "mastered_date": null,
+      "review_stage": 1,
+      "last_review_date": "2026-01-08T16:45:00",
+      "next_review_date": "2026-01-11T16:45:00",
       "topics": ["Delta-Lake", "Data-Retention"],
       "traps": ["Unit-Confusion", "Number-Trap"],
       "level": "L2-Intermediate",
@@ -423,42 +427,35 @@ def list_mistakes(topic=None, include_mastered=False):
         print_mistake_table(mistakes)
 ```
 
-#### `start_retry_mode(topic=None)`
-啟動錯題複習模式
+#### `get_not_mastered_items(topic=None, due_only=False)`
+取得未精通題目清單（可只取到期題）
 
 ```python
-def start_retry_mode(topic=None):
+def get_not_mastered_items(topic=None, due_only=False):
     """
-    啟動錯題複習模式
-    調用 practice-exam 但只載入錯題
+    取得未精通題目（可選僅到期）
     """
-    mistakes_db = load_mistakes_db()
+    db = load_mistakes_db()
+    items = []
+    for m in db['mistakes']:
+        if m.get('mastered', False):
+            continue
+        if topic and not any(topic.lower() in t.lower() for t in m.get('topics', [])):
+            continue
+        due = is_due_for_review(m)
+        if due_only and not due:
+            continue
+        items.append({
+            'question_id': m['question_id'],
+            'question_batch': m.get('question_batch'),
+            'due': due,
+            'next_review_date': m.get('next_review_date'),
+            'wrong_count': m.get('wrong_count', 0),
+        })
 
-    # 取得未精通的題目 ID
-    not_mastered = [
-        m['question_id']
-        for m in mistakes_db['mistakes']
-        if not m['mastered']
-    ]
-
-    if topic:
-        not_mastered = [
-            m['question_id']
-            for m in mistakes_db['mistakes']
-            if not m['mastered'] and
-               any(topic.lower() in t.lower() for t in m['topics'])
-        ]
-
-    if not not_mastered:
-        print("🎉 太棒了！沒有需要複習的錯題")
-        return
-
-    # 按錯誤次數排序（錯誤次數多的優先）
-    sorted_ids = sort_by_wrong_count(not_mastered, mistakes_db)
-
-    # 調用 interactive_exam 進行複習
-    # 傳入特定的題目 ID 列表
-    start_practice_with_specific_questions(sorted_ids)
+    # 排序策略：到期優先，其次下次複習時間，最後看錯誤次數
+    items.sort(key=lambda x: (0 if x['due'] else 1, x.get('next_review_date') or "", -x['wrong_count']))
+    return items
 ```
 
 #### `mark_as_mastered(question_id)`
@@ -486,7 +483,7 @@ def mark_as_mastered(question_id):
 
 ### 與 practice-exam 整合
 - `practice-exam` 答錯時自動調用 `add_mistake()`
-- `review-mistakes --retry` 調用 `practice-exam` 並傳入錯題 ID
+- 由 `practice-exam --review-mode` 載入錯題（先到期題，再未精通題）
 
 ### 與外部分析技能整合
 - 目前僅提供錯題資料輸出與統計

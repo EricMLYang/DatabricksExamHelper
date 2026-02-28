@@ -10,9 +10,10 @@ Databricks Certified Data Engineer 考試專家：題目解析、陷阱識別、
 4. **中文優先** - 繁體中文 + 保留技術術語英文
 
 ## 📂 關鍵路徑
-- `question-bank/by-order_v1/` - 題目按編號（Q-001...）
+- `question-bank/by-order_b1/` ~ `question-bank/by-order_b4/` - 2025-2026 新題型（主題庫，預設用 b4）
+- `question-bank/by-order_v1/` - 2024-2025 舊題型（legacy 補充）
 - `question-bank/by-topic/` - 題目按主題分類
-- `tooling/tagging-schema.md` - **必讀**標籤規範
+- `.github/skills/tagging-schema/references/tagging-schema.md` - **必讀**標籤規範
 - `docs/exam-map/` - 考綱映射
 - `~/.claude-exam-helper/user_data/` - 錯題與練習記錄（`mistakes.json`, `practice_history.json`）
 
@@ -23,13 +24,16 @@ Databricks Certified Data Engineer 考試專家：題目解析、陷阱識別、
 ### 1️⃣ 題目入庫（觸發：「加入這題」）
 
 **步驟：**
-1. 查詢 `by-order_v1/` 找最大編號 → 產生新編號
-2. 依 `tagging-schema.md` 自動識別標籤：
+1. 先判斷題目題池：
+   - 新題型預設收錄到 `by-order_b4/`
+   - 舊題補錄或歷史整理才收錄到 `by-order_v1/`
+2. 查詢目標題池找最大編號 → 產生新編號
+3. 依 `tagging-schema.md` 自動識別標籤：
    - Topic Tags (1-3個): Delta-Lake, Streaming, Unity-Catalog...
    - Trap Tags (0-2個): Syntax-Confusion, Parameter-Order...
    - Level Tag (必須1個): L1-Basic / L2-Intermediate / L3-Advanced
-3. 建立檔案：
-   - `by-order_v1/Q-XXX.md`（⚠️ 題目+解析合併同一檔案）
+4. 建立檔案：
+   - `by-order_b4/Q-XXX.md`（新題型預設；或依判斷寫入 `by-order_v1/`）
    - 複製到 `by-topic/[對應主題]/Q-XXX_{batch}.md`（例如 `Q-023_b4.md`）
 
 **檔案結構：**

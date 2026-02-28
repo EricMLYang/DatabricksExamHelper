@@ -1,0 +1,42 @@
+AI Agent 核心框架與 Databricks 平台實作對應.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks
+Cloud Storage.md	docs/core-knowledge/05-數據擷取/from-001_2Area-Databricks
+Data Analysis Validation Meeting.md	docs/core-knowledge/article_share/from-001_2Area-Databricks
+Data Governance in Databricks.md	docs/core-knowledge/3-安全與治理/from-001_2Area-Databricks
+Data Validation.md	docs/core-knowledge/05-數據擷取/from-001_2Area-Databricks
+Data.md	docs/core-knowledge/基礎知識/from-001_2Area-Databricks
+Databricks CICD.md	docs/core-knowledge/2-維運與自動化/from-001_2Area-Databricks
+Databricks Certified Data Engineer Professional 認證協作準備指南.md	docs/考試經驗分享/from-001_2Area-Databricks
+Databricks Generative AI Engineer Associate 認證完整解析：深度應考指南與實戰策略 1.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks
+Databricks Generative AI Engineer Associate 認證完整解析：深度應考指南與實戰策略.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks
+Databricks Generative AI 認證衝刺指南：從核心概念到實戰應考.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks
+Databricks IaC & CI!CD.md	docs/core-knowledge/2-維運與自動化/from-001_2Area-Databricks
+Databricks SOP.md	docs/core-knowledge/2-維運與自動化/from-001_2Area-Databricks
+Databricks 內圈開發循環優化策略 (Inner Loop Optimization Strategy).md	docs/core-knowledge/2-維運與自動化/from-001_2Area-Databricks
+Databricks 案例筆記：Care Cost Compass Agent System.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks
+Databricks 認證準備資訊.md	docs/考試經驗分享/from-001_2Area-Databricks
+Databricks 認證讀書計畫 .md	docs/考試經驗分享/from-001_2Area-Databricks
+Databricks26年趨勢.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks
+Delta Lake.md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+Delta Table Design Rule.md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+I 彙整! Databricks Certified Data Engineer Professional 認證協作準備指南.md	docs/考試經驗分享/from-001_2Area-Databricks
+Local Version Databricks.md	docs/core-knowledge/2-維運與自動化/from-001_2Area-Databricks
+Medallion Architecture 金銀銅架構問題 1.md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+Mosaic AI Announcements at Data + AI Summit 2025.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks
+Spark (1).md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+Spark UI ! Debug 知識總整理（精簡版）.md	docs/core-knowledge/4-成本與效能優化/from-001_2Area-Databricks
+Spark.md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+System - Databricks Architecture Plan.md	docs/core-knowledge/2-維運與自動化/from-001_2Area-Databricks
+System - Databricks Computed Plan.md	docs/core-knowledge/2-維運與自動化/from-001_2Area-Databricks
+System - Delta Table Design .md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+Universal Databricks Data Platform Design.md	docs/core-knowledge/基礎知識/from-001_2Area-Databricks
+databricks 開源 Spark Declarative Pipelines (SDP).md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+delta table.md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+【分布式資料裡的「順序」問題，談 Spark 為什麼需要 Window Function】.md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+【用 Databricks Auto Loader 處理秒級通知】.md	docs/core-knowledge/05-數據擷取/from-001_2Area-Databricks
+備考彙整.md	docs/考試經驗分享/from-001_2Area-Databricks
+備考策略.md	docs/考試經驗分享/from-001_2Area-Databricks
+延續!   Databricks Pipeline Flow 某種程度就要設計的適合 AI 看數據和資訊，.md	docs/core-knowledge/1-開發與轉換/from-001_2Area-Databricks
+數據平台精要學習建議.md	docs/core-knowledge/基礎知識/from-001_2Area-Databricks
+數據待修正問題.md	docs/core-knowledge/article_share/from-001_2Area-Databricks
+數據解義.md	docs/core-knowledge/基礎知識/from-001_2Area-Databricks
+藉由假設案例概覽 Databricks AI 服務.md	docs/core-knowledge/0-較新主題_考前彙整/from-001_2Area-Databricks

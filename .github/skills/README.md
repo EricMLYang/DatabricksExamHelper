@@ -109,6 +109,42 @@ python .github/skills/review-mistakes/scripts/mistake_tracker.py --import my_mis
 
 ---
 
+### 🛠️ 品質與治理類
+
+#### 5. **question-quality-lint** - 題庫品質檢查
+> 檢查題目格式、正解與選項一致性、標籤結構，對齊 CI 的 Question Quality 規則
+
+**使用方式：**
+```bash
+python .github/skills/question-quality-lint/scripts/lint_questions.py
+python .github/skills/question-quality-lint/scripts/lint_questions.py --strict
+python .github/skills/question-quality-lint/scripts/lint_questions.py --check-tag-schema
+```
+
+#### 6. **weak-topic-radar** - 弱點雷達報告
+> 從 `practice_history.json` + `mistakes.json` 產生弱點主題、陷阱雷達與到期複習報告
+
+**使用方式：**
+```bash
+python .github/skills/weak-topic-radar/scripts/weak_topic_radar.py
+python .github/skills/weak-topic-radar/scripts/weak_topic_radar.py \
+    --output docs/reports/weekly-weak-topic-radar.md
+```
+
+#### 7. **tagging-schema** - 標籤字典規範
+> 提供 Topic/Trap/Level 標籤標準，避免自創標籤與分類漂移
+
+**使用方式：**
+- 參考 `.github/skills/tagging-schema/references/tagging-schema.md`
+
+#### 8. **contribution-guide** - 貢獻流程規範
+> 提供題目新增、內容修正、PR 描述與 reviewer 檢查標準
+
+**使用方式：**
+- 參考 `.github/skills/contribution-guide/references/contribution-guide.md`
+
+---
+
 ## 🔄 完整學習流程
 
 ### Phase 1: 初次學習
@@ -169,14 +205,14 @@ cp ~/.claude-exam-helper/user_data/practice_history.json \
 ## 🎯 推薦使用順序
 
 ### 對於初學者
-1. **practice-exam** - 先做互動式練習，快速建立題感
+1. **practice-exam** - 先做互動式練習（建議 `--source by-order_b4 --era new`）
 2. **solve-question** - 查看完整解析，理解考點
 3. **explain-why-not** - 針對誤選選項深挖陷阱
 4. **review-mistakes** - 定期複習錯題
 
 ### 對於準備考試者
-1. **practice-exam** - 每天進行定量練習（10-20 題）
-2. **review-mistakes** - 每 2-3 天複習錯題
+1. **practice-exam** - 每天進行新題池練習（10-20 題）
+2. **review-mistakes** - 每天先清到期題（搭配 `--review-mode`）
 3. **practice-exam** - 考前進行完整模擬測驗（20 題以上）
 4. **explain-why-not** - 深入理解容易誤選的選項
 
@@ -185,7 +221,7 @@ cp ~/.claude-exam-helper/user_data/practice_history.json \
 ## ⚙️ 系統需求
 
 - Python 3.7+
-- 題庫目錄完整（`question-bank/by-order_v1/` 或 `question-bank/by-topic/`）
+- 題庫目錄完整（`question-bank/by-order_b1~b4/`、`question-bank/by-order_v1/`、`question-bank/by-topic/`）
 
 ---
 
@@ -205,6 +241,8 @@ cp ~/.claude-exam-helper/user_data/practice_history.json \
 # 賦予執行權限
 chmod +x .github/skills/practice-exam/scripts/interactive_exam.py
 chmod +x .github/skills/review-mistakes/scripts/mistake_tracker.py
+chmod +x .github/skills/question-quality-lint/scripts/lint_questions.py
+chmod +x .github/skills/weak-topic-radar/scripts/weak_topic_radar.py
 ```
 
 ---
@@ -215,14 +253,18 @@ chmod +x .github/skills/review-mistakes/scripts/mistake_tracker.py
 - [review-mistakes 詳細文件](./review-mistakes/SKILL.md)
 - [solve-question 詳細文件](./solve-question/SKILL.md)
 - [explain-why-not 詳細文件](./explain-why-not/SKILL.md)
+- [question-quality-lint 詳細文件](./question-quality-lint/SKILL.md)
+- [weak-topic-radar 詳細文件](./weak-topic-radar/SKILL.md)
+- [tagging-schema 詳細文件](./tagging-schema/SKILL.md)
+- [contribution-guide 詳細文件](./contribution-guide/SKILL.md)
 
 ---
 
 ## 🚀 未來計劃
 
 ### Phase 2: 進階功能（規劃中）
-- **spaced-review** - 間隔複習系統（基於艾賓豪斯遺忘曲線）
-- **weak-topic-analysis** - 弱點主題分析與專項訓練
+- **adaptive-mix** - 依新題/舊題與錯題率動態調整出題比例
+- **weak-topic-analysis** - 弱點主題分析與專項訓練（已可用 `weak-topic-radar` skill 產出基礎報告）
 
 ---
 

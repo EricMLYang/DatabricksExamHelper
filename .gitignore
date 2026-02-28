@@ -47,3 +47,6 @@ env/
 # Test outputs
 test-output/
 *.log
+
+# Generated personal study reports
+docs/reports/weak-topic-radar.md

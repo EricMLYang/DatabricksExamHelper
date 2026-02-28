@@ -292,7 +292,7 @@
 經團隊討論後，由專案維護者更新此文件。
 
 ### 步驟 4: 同步更新
-- 更新 `tooling/tagging-schema.md`
+- 更新 `.github/skills/tagging-schema/references/tagging-schema.md`
 - 通知團隊成員新標籤可用
 - 回溯標記相關題目（選填）
 
@@ -333,9 +333,9 @@ python skills/scripted/team-weakness-dashboard.py
 
 ## 🔗 相關文件
 
-- [contribution-guide.md](./contribution-guide.md) - PR 提交與 Review 規範
-- [question-template.md](../question-bank/_template/question-template.md) - 題目模板
-- [analysis-template.md](../question-bank/_template/analysis-template.md) - 解析模板
+- [contribution-guide.md](../../contribution-guide/references/contribution-guide.md) - PR 提交與 Review 規範
+- [question-template.md](../../../../question-bank/_template/question-template.md) - 題目模板
+- [analysis-template.md](../../../../question-bank/_template/analysis-template.md) - 解析模板
 
 ---
 
