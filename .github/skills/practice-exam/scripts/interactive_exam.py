@@ -25,6 +25,12 @@ except Exception:
     add_mistake = None
     get_not_mastered_items = None
 
+# Optional integration with profile_manager for study-phase display.
+try:
+    from profile_manager import display_study_phase_summary
+except Exception:
+    display_study_phase_summary = None
+
 SOURCE_CHOICES = [
     "by-order_b4",
     "by-order_b3",
@@ -593,6 +599,14 @@ def save_practice_history(session: Dict):
 
 def start_practice_exam(args):
     """啟動互動式練習考試"""
+
+    # Show study-phase summary when available.
+    if display_study_phase_summary is not None:
+        try:
+            print()
+            display_study_phase_summary()
+        except Exception:
+            pass  # Non-critical; skip silently.
 
     print("\n" + "="*70)
     print("\n# 📝 Databricks 練習考試\n")
