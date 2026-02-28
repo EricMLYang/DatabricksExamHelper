@@ -71,6 +71,22 @@ def validate_exam_date(exam_date: str) -> bool:
         return False
 
 
+def validate_exam_date_future(exam_date: str) -> bool:
+    """
+    驗證考試日期格式有效且日期 >= 今天。
+
+    Args:
+        exam_date: 待驗證的日期字串（YYYY-MM-DD）
+
+    Returns:
+        True 若日期格式有效且不早於今天，否則 False
+    """
+    if not validate_exam_date(exam_date):
+        return False
+    parsed = datetime.strptime(exam_date, '%Y-%m-%d').date()
+    return parsed >= datetime.now().date()
+
+
 def init_profile() -> Dict:
     """
     初始化使用者設定檔。若檔案不存在則自動建立；若已存在則載入。
@@ -200,3 +216,80 @@ def get_study_mode() -> str:
     if days >= 7:
         return 'guided'
     return 'sprint'
+
+
+# ---------------------------------------------------------------------------
+# Study Phase Summary UI
+# ---------------------------------------------------------------------------
+
+# Phase metadata: label, description, icon
+_PHASE_INFO = {
+    'strategy': {
+        'label': 'Strategy Phase',
+        'icon': '📐',
+        'description': 'Diagnosis and Planning',
+        'advice': 'Focus on understanding weak areas and building a study plan.',
+    },
+    'guided': {
+        'label': 'Guided Phase',
+        'icon': '📋',
+        'description': "Today's Plan — dynamic tasks",
+        'advice': 'Follow your daily plan and tackle targeted practice sets.',
+    },
+    'sprint': {
+        'label': 'Sprint Phase',
+        'icon': '🔥',
+        'description': 'Direct Drill — high-intensity flashcards',
+        'advice': 'Drill weak topics and review mistakes at full intensity!',
+    },
+    'default': {
+        'label': 'No Exam Date Set',
+        'icon': 'ℹ️',
+        'description': 'Set your exam date to unlock your study timeline.',
+        'advice': 'Run exam_date_setup.py or use --set-date to get started.',
+    },
+}
+
+
+def format_study_phase_summary(
+    exam_date_str: Optional[str] = None,
+    days: Optional[int] = None,
+    mode: Optional[str] = None,
+) -> str:
+    """
+    產生學習階段摘要文字（純文字，不含副作用）。
+
+    可傳入預先計算的值以方便測試，若皆為 None 則自動從 profile 讀取。
+
+    Returns:
+        多行純文字摘要字串
+    """
+    if exam_date_str is None:
+        exam_date_str = get_exam_date()
+    if days is None:
+        days = get_days_until_exam()
+    if mode is None:
+        mode = get_study_mode()
+
+    info = _PHASE_INFO.get(mode, _PHASE_INFO['default'])
+    lines = []
+    lines.append("=" * 50)
+    lines.append(f"  {info['icon']}  {info['label']}")
+    lines.append("-" * 50)
+
+    if exam_date_str and days is not None:
+        lines.append(f"  Exam Date  : {exam_date_str}")
+        lines.append(f"  Days Left  : {days}")
+    else:
+        lines.append("  Exam Date  : Not set")
+
+    lines.append(f"  Focus      : {info['description']}")
+    lines.append("-" * 50)
+    lines.append(f"  💡 {info['advice']}")
+    lines.append("=" * 50)
+    return "\n".join(lines)
+
+
+def display_study_phase_summary() -> None:
+    """在終端機印出學習階段摘要。"""
+    print(format_study_phase_summary())

@@ -32,6 +32,7 @@ sys.path.insert(
 from profile_manager import (
     PROFILE_FILENAME,
     _create_empty_profile,
+    format_study_phase_summary,
     get_days_until_exam,
     get_exam_date,
     get_profile_path,
@@ -40,6 +41,7 @@ from profile_manager import (
     load_profile,
     update_exam_date,
     validate_exam_date,
+    validate_exam_date_future,
 )
 
 
@@ -465,6 +467,126 @@ class TestProfileFilePath:
         """測試設定檔在 user_data 目錄下"""
         path = get_profile_path()
         assert 'user_data' in str(path)
+
+
+class TestValidateExamDateFuture:
+    """測試未來日期驗證功能"""
+
+    def test_future_date_is_valid(self):
+        """測試未來日期回傳 True"""
+        future = (datetime.now().date() + timedelta(days=30)).isoformat()
+        assert validate_exam_date_future(future) is True
+
+    def test_today_is_valid(self):
+        """測試今天的日期回傳 True（Sprint Phase 包含今天）"""
+        today = datetime.now().date().isoformat()
+        assert validate_exam_date_future(today) is True
+
+    def test_yesterday_is_invalid(self):
+        """測試昨天的日期回傳 False"""
+        yesterday = (datetime.now().date() - timedelta(days=1)).isoformat()
+        assert validate_exam_date_future(yesterday) is False
+
+    def test_past_date_is_invalid(self):
+        """測試過去的日期回傳 False"""
+        assert validate_exam_date_future("2020-01-01") is False
+
+    def test_invalid_format_returns_false(self):
+        """測試無效格式回傳 False（不會 raise）"""
+        assert validate_exam_date_future("not-a-date") is False
+
+    def test_none_returns_false(self):
+        """測試 None 回傳 False"""
+        assert validate_exam_date_future(None) is False
+
+    def test_empty_string_returns_false(self):
+        """測試空字串回傳 False"""
+        assert validate_exam_date_future("") is False
+
+    def test_far_future_is_valid(self):
+        """測試遠未來日期回傳 True"""
+        assert validate_exam_date_future("2099-12-31") is True
+
+    def test_invalid_leap_year_returns_false(self):
+        """測試非閏年 2 月 29 日回傳 False"""
+        assert validate_exam_date_future("2026-02-29") is False
+
+
+class TestFormatStudyPhaseSummary:
+    """測試學習階段摘要格式化"""
+
+    def test_strategy_phase_output(self):
+        """測試 strategy 模式摘要包含正確標籤"""
+        output = format_study_phase_summary(
+            exam_date_str="2099-06-15", days=60, mode="strategy"
+        )
+        assert "Strategy Phase" in output
+        assert "2099-06-15" in output
+        assert "60" in output
+        assert "Diagnosis and Planning" in output
+
+    def test_guided_phase_output(self):
+        """測試 guided 模式摘要包含正確標籤"""
+        output = format_study_phase_summary(
+            exam_date_str="2099-06-15", days=15, mode="guided"
+        )
+        assert "Guided Phase" in output
+        assert "15" in output
+
+    def test_sprint_phase_output(self):
+        """測試 sprint 模式摘要包含正確標籤"""
+        output = format_study_phase_summary(
+            exam_date_str="2099-06-15", days=3, mode="sprint"
+        )
+        assert "Sprint Phase" in output
+        assert "3" in output
+        assert "Direct Drill" in output
+
+    def test_default_phase_output(self):
+        """測試未設定日期時的摘要"""
+        output = format_study_phase_summary(
+            exam_date_str=None, days=None, mode="default"
+        )
+        assert "No Exam Date Set" in output
+        assert "Not set" in output
+
+    def test_today_sprint_zero_days(self):
+        """測試今天（0 天）觸發 sprint 摘要"""
+        today = datetime.now().date().isoformat()
+        output = format_study_phase_summary(
+            exam_date_str=today, days=0, mode="sprint"
+        )
+        assert "Sprint Phase" in output
+        assert today in output
+
+    def test_output_contains_separator_lines(self):
+        """測試摘要包含分隔線"""
+        output = format_study_phase_summary(
+            exam_date_str="2099-06-15", days=10, mode="guided"
+        )
+        assert "=" * 50 in output
+        assert "-" * 50 in output
+
+    def test_boundary_31_days_strategy(self):
+        """測試 31 天的 strategy 摘要"""
+        output = format_study_phase_summary(
+            exam_date_str="2099-06-15", days=31, mode="strategy"
+        )
+        assert "Strategy Phase" in output
+
+    def test_boundary_7_days_guided(self):
+        """測試 7 天的 guided 摘要"""
+        output = format_study_phase_summary(
+            exam_date_str="2099-06-15", days=7, mode="guided"
+        )
+        assert "Guided Phase" in output
+
+    def test_boundary_6_days_sprint(self):
+        """測試 6 天的 sprint 摘要"""
+        output = format_study_phase_summary(
+            exam_date_str="2099-06-15", days=6, mode="sprint"
+        )
+        assert "Sprint Phase" in output
 
 
 # 執行測試的說明
